@@ -13,18 +13,18 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--white);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--light);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--red);text-decoration:none}
 a:hover{text-decoration:underline}
 .katex{font-size:1.08em}
-.wrap{max-width:1440px;margin:0 auto;padding:0 24px}
+.wrap{max-width:1840px;margin:0 auto;padding:0 24px}
 .mock{background:var(--ink);color:#fff;font-size:12.5px;text-align:center;padding:6px 16px}
 .mock b{color:#ff8a84;font-weight:600}
 header.hero{position:relative;background:var(--white);border-bottom:1px solid var(--line-soft)}
 header.hero::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--red)}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:center;padding:64px 0 56px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:center;padding:40px 0 36px}
 .eyebrow{font-size:14px;font-weight:600;letter-spacing:.01em;color:var(--red);margin:0 0 14px}
-h1{font-size:clamp(34px,4.4vw,52px);line-height:1.07;letter-spacing:-.025em;font-weight:700;margin:0 0 18px}
+h1{font-size:clamp(32px,3.4vw,48px);line-height:1.07;letter-spacing:-.025em;font-weight:700;margin:0 0 18px}
 h1 em{font-style:normal;color:var(--red)}
 .lede{font-size:18px;color:var(--ink-2);max-width:620px;margin:0 0 28px}
 .btns{display:flex;flex-wrap:wrap;gap:10px}
@@ -62,10 +62,8 @@ input[type=range]:focus-visible{outline:2px solid var(--red);outline-offset:4px;
 .chip:hover{border-color:var(--ink)}
 .chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
 .chip:focus-visible{outline:2px solid var(--red);outline-offset:2px}
-section{padding:56px 0}
-section.alt{background:var(--light)}
-h2{font-size:clamp(24px,2.8vw,32px);letter-spacing:-.02em;line-height:1.15;margin:0 0 8px;font-weight:700}
-.sub{color:var(--ink-2);margin:0 0 28px;max-width:780px}
+h2{font-size:clamp(21px,1.7vw,26px);letter-spacing:-.02em;line-height:1.2;margin:0 0 6px;font-weight:700}
+.sub{color:var(--ink-2);margin:0 0 16px;max-width:900px;font-size:15px;line-height:1.55}
 .main-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
 .panel{background:#fff;border:1px solid var(--line-soft);border-radius:var(--radius);padding:20px 20px 12px}
 .panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
@@ -118,8 +116,8 @@ table.data tr.sel td{color:var(--red);font-weight:500}
 .how h3{margin:0 0 6px;font-size:17px}
 .how p{margin:0;color:var(--ink-2);font-size:14.5px}
 .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:26px 0 0;font-size:13.5px;font-weight:500}
-.flow .box{padding:9px 14px;border-radius:10px;background:#fff;border:1px solid var(--line)}
-.flow .box.red{border-color:var(--red);color:var(--red)}
+.flow .chipbox{padding:9px 14px;border-radius:10px;background:#fff;border:1px solid var(--line)}
+.flow .chipbox.red{border-color:var(--red);color:var(--red)}
 .flow .arr{color:var(--ink-2)}
 .about{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px}
 .about ul{margin:0;padding-left:18px;color:var(--ink-2)}
@@ -148,7 +146,29 @@ table.mini{border-collapse:collapse;font-size:13px;width:100%;margin:6px 0 10px}
 table.mini th,table.mini td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:left;vertical-align:top}
 table.mini th{color:var(--ink-2);font-weight:600;font-size:12.5px}
 table.mini td.num{font-family:var(--mono)}
+.dash{max-width:1840px;margin:0 auto;padding:20px 24px 36px;display:grid;gap:20px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.col{display:grid;gap:20px;align-content:start}
+.box{background:#fff;border:1px solid var(--line-soft);border-radius:18px;padding:22px 24px;min-width:0}
+.box .panel{border:0;padding:0;border-radius:0;background:transparent}
+.box .kpi{background:var(--light);border:0}
+.box .rule-def{background:var(--light);border:0}
+.box .card{background:var(--light)}
+.box .card:hover{box-shadow:none;background:#efeef1}
+.box .how .step{background:var(--light);border:0}
+.box .flow .chipbox{background:#fff}
+#sec-cards .cards{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+#sec-cards .card{padding:14px 14px 8px}
+#sec-cards .card .verdict{min-height:0;margin:8px 0 2px;font-size:13px}
+.box .calc{grid-template-columns:minmax(0,1fr);gap:8px}
+.calc-ctl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 24px}
+.calc-ctl .note-s{grid-column:1/-1}
+.rowhead{padding:6px 4px 0}
+.rowhead .sub{margin-bottom:0}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+@media (max-width:1180px){
+  .row2{grid-template-columns:minmax(0,1fr)}
+}
 @media (max-width:960px){
   .hero-grid{grid-template-columns:minmax(0,1fr);gap:28px;padding:44px 0 40px}
   .controls .wrap{grid-template-columns:minmax(0,1fr);gap:12px}
@@ -161,6 +181,8 @@ table.mini td.num{font-family:var(--mono)}
 }
 @media (max-width:600px){
   .wrap{padding-left:16px;padding-right:16px}
+  .dash{padding:12px 10px 24px;gap:12px}
+  .box{padding:16px 14px;border-radius:14px}
   .stats{grid-template-columns:minmax(0,1fr)}
   .kpis{grid-template-columns:minmax(0,1fr)}
   .cards{grid-template-columns:minmax(0,1fr)}
@@ -213,9 +235,9 @@ table.mini td.num{font-family:var(--mono)}
   </div>
 </div>
 
-<section>
-  <div class="wrap">
-    <h2 id="cond-title"></h2>
+<main class="dash">
+<section class="box" id="sec-main">
+<h2 id="cond-title"></h2>
     <p class="sub" id="cond-sub"></p>
     <div class="main-grid">
       <div class="panel">
@@ -236,32 +258,26 @@ table.mini td.num{font-family:var(--mono)}
         <div class="kpi"><div class="k">Worst-case deviation per bit</div><div class="v" id="k-dev"></div><div class="n">from the classical receiver's LLR, on every slot. A guarantee, not an average.</div></div>
       </div>
     </div>
-  </div>
 </section>
-
-<section class="alt">
-  <div class="wrap">
-    <h2>The gain-versus-safety trade-off</h2>
+<div class="row2">
+<section class="box" id="sec-frontier">
+<h2>The gain-versus-safety trade-off</h2>
     <p class="sub">Each line is one condition: its 10% error point as the bound loosens from \(\Delta_{\max}=0\), the classical receiver, to \(\Delta_{\max}\to\infty\), the network alone. Lower is better. The selected condition is drawn in red. Click any point to select its condition; hover for values.</p>
     <div class="panel">
       <div class="panel-head"><div class="panel-title">10% error point vs. \(\Delta_{\max}\)<small>Three-seed means. Points in the top row did not reach 10% block errors anywhere in the swept range.</small></div><div class="legend" id="frontier-legend"></div></div>
       <svg id="frontier" viewBox="0 0 720 360" width="100%" role="img" aria-label="10% error point against the bound for every condition" style="touch-action:pan-y"></svg>
     </div>
-  </div>
 </section>
-
-<section>
-  <div class="wrap">
-    <h2 id="cards-title">Six conditions, one bound</h2>
+<section class="box" id="sec-cards">
+<h2 id="cards-title">Six conditions, one bound</h2>
     <p class="sub">The network was trained under one condition only. Move the bound and watch where it helps, and where the network on its own breaks down. Hover a point for its value; select a card to look closer.</p>
     <div class="legend cards-legend" id="cards-legend"></div>
     <div class="cards" id="cards"></div>
-  </div>
 </section>
-
-<section class="alt">
-  <div class="wrap">
-    <h2>Inside one slot</h2>
+</div>
+<div class="row2">
+<section class="box" id="sec-slot">
+<h2>Inside one slot</h2>
     <p class="sub" id="slot-sub"></p>
     <div class="panel">
       <div class="panel-head">
@@ -272,19 +288,16 @@ table.mini td.num{font-family:var(--mono)}
       <p class="sub" id="slot-none" hidden></p>
       <div class="counters" id="counters"></div>
     </div>
-  </div>
 </section>
-
-<section>
-  <div class="wrap">
-    <h2>What the bound means for one bit</h2>
+<section class="box" id="sec-calc">
+<h2>What the bound means for one bit</h2>
     <p class="sub">Set a classical LLR and a network LLR for one coded bit; the bound chosen with the slider above decides how far the output may move. An LLR \(L\) means \(P(b=1) = 1/(1+e^{-L})\): positive favours a 1, negative a 0, and the size is the confidence.</p>
     <div class="calc">
       <div class="calc-ctl">
-        <label for="cl"><span>Classical \(L_{\mathrm{c}}\)</span><output id="cl-out"></output></label>
-        <input type="range" id="cl" min="-8" max="8" step="0.1" value="1">
-        <label for="cn"><span>Network \(L_{\mathrm{R3}}\)</span><output id="cn-out"></output></label>
-        <input type="range" id="cn" min="-8" max="8" step="0.1" value="-2.5">
+        <div><label for="cl"><span>Classical \(L_{\mathrm{c}}\)</span><output id="cl-out"></output></label>
+        <input type="range" id="cl" min="-8" max="8" step="0.1" value="1"></div>
+        <div><label for="cn"><span>Network \(L_{\mathrm{R3}}\)</span><output id="cn-out"></output></label>
+        <input type="range" id="cn" min="-8" max="8" step="0.1" value="-2.5"></div>
         <p class="note-s" id="calc-d"></p>
       </div>
       <div class="panel">
@@ -293,12 +306,11 @@ table.mini td.num{font-family:var(--mono)}
         <div class="calc-out" id="calc-out"></div>
       </div>
     </div>
-  </div>
 </section>
-
-<section class="alt">
-  <div class="wrap">
-    <h2>Other ways to combine the two receivers</h2>
+</div>
+<div class="row2">
+<section class="box" id="sec-fusion">
+<h2>Other ways to combine the two receivers</h2>
     <p class="sub">The bound is one way to mix the classical and network LLRs. The paper also measured four generic rules on the same stored LLRs. Pick a rule and a setting and compare it with the bound chosen above. Bars show the gain over the classical receiver at the 10% point, in dB of \(E_{\mathrm{b}}/N_0\) (higher is better); whiskers span the three seeds.</p>
     <div class="seg-row"><div class="seg" id="rule-seg" role="group" aria-label="Rule"></div></div>
     <div class="seg-row"><div class="seg" id="param-seg" role="group" aria-label="Setting"></div></div>
@@ -312,71 +324,68 @@ table.mini td.num{font-family:var(--mono)}
       <div class="panel-head"><div class="panel-title">Gain over the classical receiver at the 10% point<small>The five conditions of the fusion study, paired on shared realizations per seed.</small></div><div class="legend" id="fusion-legend"></div></div>
       <svg id="fusion" viewBox="0 0 720 320" width="100%" role="img" aria-label="Gain of the bound and of the chosen rule in each condition" style="touch-action:pan-y"></svg>
     </div>
-  </div>
 </section>
-
-<section>
-  <div class="wrap">
-    <h2>Does it run in real time?</h2>
+<div class="col">
+<section class="box" id="sec-latency">
+<h2>Does it run in real time?</h2>
     <p class="sub" id="lat-sub"></p>
     <div class="panel">
       <div class="panel-head"><div class="panel-title">Inference time per slot, neural path<small>Hover a bar for details.</small></div><div class="legend" id="lat-legend"></div></div>
       <svg id="lat" viewBox="0 0 720 220" width="100%" role="img" aria-label="Inference time per slot against the slot budget"></svg>
       <p class="note-s" id="lat-note"></p>
     </div>
-  </div>
 </section>
-
-<section class="alt">
-  <div class="wrap">
-    <h2>More experiments from the paper</h2>
-    <p class="sub">Three further questions the paper answers. Each value is the paper's table as printed; hover a point for its value.</p>
-    <div class="more-grid">
-      <div class="panel">
+<section class="box" id="sec-rank2">
+<div class="panel">
+        <div class="panel-head"><div class="panel-title">Two spatial layers (rank-2 MIMO)<small>Tables IV-a and IV-b: 256 transmit elements to 2 receive chains.</small></div></div>
+        <div id="m4"></div>
+      </div>
+</section>
+</div>
+</div>
+<div class="rowhead"><h2>More experiments from the paper</h2>
+    <p class="sub">Three further questions the paper answers. Each value is the paper's table as printed; hover a point for its value.</p></div>
+<div class="row2">
+<section class="box" id="sec-m8">
+<div class="panel">
         <div class="panel-head"><div class="panel-title">A better classical channel estimator<small>Table VIII: 10% error point, \(E_{\mathrm{b}}/N_0\) in dB, lower is better.</small></div><div class="legend" id="m8-legend"></div></div>
         <svg id="m8" viewBox="0 0 720 260" width="100%" role="img" aria-label="Classical front ends compared"></svg>
         <p class="note-s" id="m8-note"></p>
       </div>
-      <div class="panel">
+</section>
+<section class="box" id="sec-m6">
+<div class="panel">
         <div class="panel-head"><div class="panel-title">Training on varied IQ imbalance<small>Table VI: 10% error point, \(E_{\mathrm{b}}/N_0\) in dB, lower is better.</small></div><div class="legend" id="m6-legend"></div></div>
         <svg id="m6" viewBox="0 0 720 260" width="100%" role="img" aria-label="Fixed against randomized IQ-imbalance training"></svg>
         <p class="note-s" id="m6-note"></p>
       </div>
-      <div class="panel">
-        <div class="panel-head"><div class="panel-title">Two spatial layers (rank-2 MIMO)<small>Tables IV-a and IV-b: 256 transmit elements to 2 receive chains.</small></div></div>
-        <div id="m4"></div>
-      </div>
-    </div>
-  </div>
 </section>
-
-<section>
-  <div class="wrap">
-    <h2>How the bound works</h2>
+</div>
+<div class="row2">
+<section class="box" id="sec-how">
+<h2>How the bound works</h2>
     <p class="sub">Nothing is retrained. The bound is applied to the two receivers' outputs, one bit at a time, just before the decoder.</p>
     <div class="how">
       <div class="step"><span class="num">1</span><h3>Classical anchor</h3><p>A standard receiver with IQ-imbalance compensation produces its log-likelihood ratio \(L_{\mathrm{c}}\) for every coded bit.</p></div>
       <div class="step"><span class="num">2</span><h3>Bounded correction</h3><p>The trained network proposes \(L_{\mathrm{R3}}\). The difference \(L_{\mathrm{R3}} - L_{\mathrm{c}}\) is clipped to \(\pm\Delta_{\max}\), so no bit can move further than that: \(\lvert L_{\mathrm{R5}} - L_{\mathrm{c}} \rvert \le \Delta_{\max}\).</p></div>
       <div class="step"><span class="num">3</span><h3>Exact fallback</h3><p>At \(\Delta_{\max} = 0\) the output is the classical receiver, bit for bit, whatever the network's weights. As \(\Delta_{\max} \to \infty\) it is the network alone.</p></div>
     </div>
-    <div class="flow" aria-hidden="true"><span class="box">Received slot</span><span class="arr">→</span><span class="box">Classical receiver</span><span class="arr">+</span><span class="box">Neural receiver</span><span class="arr">→</span><span class="box red">Clip to \(L_{\mathrm{c}} \pm \Delta_{\max}\)</span><span class="arr">→</span><span class="box">LDPC decoder</span></div>
-  </div>
+    <div class="flow" aria-hidden="true"><span class="chipbox">Received slot</span><span class="arr">→</span><span class="chipbox">Classical receiver</span><span class="arr">+</span><span class="chipbox">Neural receiver</span><span class="arr">→</span><span class="chipbox red">Clip to \(L_{\mathrm{c}} \pm \Delta_{\max}\)</span><span class="arr">→</span><span class="chipbox">LDPC decoder</span></div>
 </section>
-
-<section class="alt">
-  <div class="wrap about">
-    <div>
-      <h2>About these results</h2>
+<div class="col">
+<section class="box" id="sec-about">
+<h2>About these results</h2>
       <p class="sub" style="margin-bottom:14px">Everything on this page was measured in advance on the authors' workstation; nothing here is simulated in your browser. The curves and operating points come from the paper's measurement campaign, and every value the paper prints is checked against it when the page is built. The data-rate view and the one-bit calculator are computed on the page from those values.</p>
       <ul id="about-list"></ul>
-    </div>
-    <div>
-      <h2>Cite</h2>
+</section>
+<section class="box" id="sec-cite">
+<h2>Cite</h2>
       <p class="sub" style="margin-bottom:14px">If you use this work, please cite the paper.</p>
       <div class="cite">A. Elnashar and M. AlHaj, "A Bounded Neural Receiver with Exact Classical Fallback for 6G cmWave: Fair-Baseline Evaluation," <i>IEEE Open Journal of the Communications Society</i>, 2026.</div>
-    </div>
-  </div>
 </section>
+</div>
+</div>
+</main>
 
 <footer>
   <div class="wrap"><span>Code released under the MIT licence. © 2026 Mohammed AlHaj.</span><span>Simulated link-level results; not measurements from a live network.</span></div>
@@ -405,7 +414,7 @@ const DMX=()=>T("\\Delta_{\\max}","Δmax");
 const EBN0=()=>T("E_{\\mathrm{b}}/N_0","Eb/N0");
 const nameOf=d=>d==="0"?"Classical, "+T("\\Delta_{\\max}=0","Δmax = 0"):d==="unbounded"?"Network alone, "+T("\\Delta_{\\max}\\to\\infty","Δmax → ∞"):"Bounded, "+T("\\Delta_{\\max}="+LT[d],"Δmax = "+LP[d]);
 const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a){if(a[k]!==null&&a[k]!==undefined)e.setAttribute(k,a[k]);}if(p)p.appendChild(e);return e;};
-const widthOf=node=>Math.round(Math.max(320,Math.min(760,node.getBoundingClientRect().width||720)));
+const widthOf=node=>Math.round(Math.max(320,Math.min(1100,node.getBoundingClientRect().width||720)));
 
 // legend swatches drawn as the same marks the charts use
 const SW={
