@@ -4,7 +4,7 @@ A neural receiver for 6G cmWave whose output never strays more than a fixed amou
 receiver's answer, bit by bit. Set $\Delta_{\max} = 0$ and the classical receiver comes back exactly, whatever the network's
 weights; let $\Delta_{\max} \to \infty$ and it is the network alone.
 
-$$L_{\mathrm{R5}} = L_{\mathrm{c}} + \operatorname{clip}\left(L_{\mathrm{R3}} - L_{\mathrm{c}},\ \pm\Delta_{\max}\right)$$
+$$L_{\mathrm{R5}} = L_{\mathrm{c}} + \mathrm{clip}\left(L_{\mathrm{R3}} - L_{\mathrm{c}},\ \pm\Delta_{\max}\right)$$
 
 where $L_{\mathrm{c}}$ is the classical receiver's log-likelihood ratio for a coded bit, $L_{\mathrm{R3}}$ the trained
 network's, and $L_{\mathrm{R5}}$ the bounded output passed to the LDPC decoder.
