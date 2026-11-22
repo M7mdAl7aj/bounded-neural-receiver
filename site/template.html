@@ -127,6 +127,27 @@ table.data tr.sel td{color:var(--red);font-weight:500}
 .cite{font-size:13.5px;background:var(--light);border-radius:10px;padding:14px 16px;color:var(--ink);line-height:1.55}
 footer{border-top:1px solid var(--line-soft);padding:28px 0 40px;color:var(--ink-2);font-size:13px}
 footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.seg-row{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 10px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;background:var(--light);border-radius:18px;padding:3px}
+.seg button{font:inherit;font-size:13px;font-weight:500;padding:6px 12px;border-radius:999px;border:0;background:transparent;color:var(--ink);cursor:pointer;transition:background .15s,color .15s}
+.seg button:hover{background:rgba(255,255,255,.7)}
+.seg button[aria-pressed=true]{background:#fff;box-shadow:0 1px 3px rgba(10,10,10,.15);color:var(--red)}
+.seg button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.note-s{font-size:12.5px;color:var(--ink-2);margin:8px 0 2px;line-height:1.5}
+.calc{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start}
+.calc-ctl label{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;font-weight:600;margin:14px 0 2px}
+.calc-ctl output{color:var(--red);font-weight:500;font-family:var(--mono)}
+.calc-out{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:6px 0 4px}
+.calc-out .stat{background:var(--light);border:0}
+.calc-out .stat .v{font-size:20px}
+.calc-msg{grid-column:1/-1;font-size:13.5px;color:var(--ink-2)}
+.rule-def{background:#fff;border:1px solid var(--line-soft);border-radius:var(--radius);padding:6px 18px 2px;margin:0 0 14px}
+.rule-def p{margin:0 0 10px;color:var(--ink-2);font-size:14px}
+.more-grid{display:grid;gap:16px}
+table.mini{border-collapse:collapse;font-size:13px;width:100%;margin:6px 0 10px}
+table.mini th,table.mini td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:left;vertical-align:top}
+table.mini th{color:var(--ink-2);font-weight:600;font-size:12.5px}
+table.mini td.num{font-family:var(--mono)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 @media (max-width:960px){
   .hero-grid{grid-template-columns:minmax(0,1fr);gap:28px;padding:44px 0 40px}
@@ -136,6 +157,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
   .how{grid-template-columns:minmax(0,1fr)}
   .about{grid-template-columns:minmax(0,1fr);gap:24px}
+  .calc{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:600px){
   .wrap{padding-left:16px;padding-right:16px}
@@ -146,6 +168,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   section{padding:40px 0}
   .panel{padding:14px 10px 8px}
   .formula .katex{font-size:1.15em}
+  .calc-out{grid-template-columns:minmax(0,1fr)}
 }
 </style>
 </head>
@@ -200,7 +223,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
           <div class="panel-title">Block error rate vs. \(E_{\mathrm{b}}/N_0\)<small>Lower is better. Each line is the mean of three seeds; the light-orange band is their range, often thinner than the line itself. Hover for values.</small></div>
           <div class="legend" id="legend"></div>
         </div>
+        <div class="seg-row"><div class="seg" id="view-seg" role="group" aria-label="Show"><button data-v="bler" aria-pressed="true">Error rate</button><button data-v="tput" aria-pressed="false">Data rate</button></div><div class="seg" id="seed-seg" role="group" aria-label="Seeds"><button data-s="0" aria-pressed="true">Average of three seeds</button><button data-s="1" aria-pressed="false">Each seed</button></div></div>
         <svg id="chart" viewBox="0 0 720 400" width="100%" role="img" aria-label="Block error rate curves" style="touch-action:pan-y"></svg>
+        <p class="note-s" id="tput-note" hidden></p>
         <button class="tablebtn" id="tablebtn" aria-expanded="false">Show as a table</button>
         <div id="table" hidden></div>
       </div>
@@ -216,14 +241,25 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 <section class="alt">
   <div class="wrap">
-    <h2>Six conditions, one bound</h2>
+    <h2>The gain-versus-safety trade-off</h2>
+    <p class="sub">Each line is one condition: its 10% error point as the bound loosens from \(\Delta_{\max}=0\), the classical receiver, to \(\Delta_{\max}\to\infty\), the network alone. Lower is better. The selected condition is drawn in red. Click any point to select its condition; hover for values.</p>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">10% error point vs. \(\Delta_{\max}\)<small>Three-seed means. Points in the top row did not reach 10% block errors anywhere in the swept range.</small></div><div class="legend" id="frontier-legend"></div></div>
+      <svg id="frontier" viewBox="0 0 720 360" width="100%" role="img" aria-label="10% error point against the bound for every condition" style="touch-action:pan-y"></svg>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="cards-title">Six conditions, one bound</h2>
     <p class="sub">The network was trained under one condition only. Move the bound and watch where it helps, and where the network on its own breaks down. Hover a point for its value; select a card to look closer.</p>
     <div class="legend cards-legend" id="cards-legend"></div>
     <div class="cards" id="cards"></div>
   </div>
 </section>
 
-<section>
+<section class="alt">
   <div class="wrap">
     <h2>Inside one slot</h2>
     <p class="sub" id="slot-sub"></p>
@@ -233,12 +269,88 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         <div class="legend" id="slot-legend"></div>
       </div>
       <svg id="slot" viewBox="0 0 720 300" width="100%" role="img" aria-label="LLR per coded bit for one slot" style="touch-action:pan-y"></svg>
+      <p class="sub" id="slot-none" hidden></p>
       <div class="counters" id="counters"></div>
     </div>
   </div>
 </section>
 
+<section>
+  <div class="wrap">
+    <h2>What the bound means for one bit</h2>
+    <p class="sub">Set a classical LLR and a network LLR for one coded bit; the bound chosen with the slider above decides how far the output may move. An LLR \(L\) means \(P(b=1) = 1/(1+e^{-L})\): positive favours a 1, negative a 0, and the size is the confidence.</p>
+    <div class="calc">
+      <div class="calc-ctl">
+        <label for="cl"><span>Classical \(L_{\mathrm{c}}\)</span><output id="cl-out"></output></label>
+        <input type="range" id="cl" min="-8" max="8" step="0.1" value="1">
+        <label for="cn"><span>Network \(L_{\mathrm{R3}}\)</span><output id="cn-out"></output></label>
+        <input type="range" id="cn" min="-8" max="8" step="0.1" value="-2.5">
+        <p class="note-s" id="calc-d"></p>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">One bit on the LLR line<small>Hover a mark for its value.</small></div><div class="legend" id="calc-legend"></div></div>
+        <svg id="calc-svg" viewBox="0 0 720 150" width="100%" role="img" aria-label="One bit's classical, network and bounded LLR"></svg>
+        <div class="calc-out" id="calc-out"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="alt">
+  <div class="wrap">
+    <h2>Other ways to combine the two receivers</h2>
+    <p class="sub">The bound is one way to mix the classical and network LLRs. The paper also measured four generic rules on the same stored LLRs. Pick a rule and a setting and compare it with the bound chosen above. Bars show the gain over the classical receiver at the 10% point, in dB of \(E_{\mathrm{b}}/N_0\) (higher is better); whiskers span the three seeds.</p>
+    <div class="seg-row"><div class="seg" id="rule-seg" role="group" aria-label="Rule"></div></div>
+    <div class="seg-row"><div class="seg" id="param-seg" role="group" aria-label="Setting"></div></div>
+    <div class="rule-def" id="rule-def">
+      <div data-rule="0">\[L = \lambda\, L_{\mathrm{R3}} + (1-\lambda)\, L_{\mathrm{c}}\]<p>Blend: a fixed mix of the two LLRs on every bit. No cap: a fraction \(\lambda\) of any network excursion reaches the decoder.</p></div>
+      <div data-rule="1" hidden>\[L = \begin{cases} L_{\mathrm{R3}} & \text{if } \lvert L_{\mathrm{R3}} \rvert \ge \tau \\ L_{\mathrm{c}} & \text{otherwise} \end{cases}\]<p>Confidence pick: per bit, use the network only where it is confident. \(\tau\) is set at a percentile of \(\lvert L_{\mathrm{R3}} \rvert\) measured in the training condition at each SNR.</p></div>
+      <div data-rule="2" hidden>\[\text{block LLRs} = \begin{cases} L_{\mathrm{R3}} & \text{if } \overline{\lvert L_{\mathrm{R3}} - L_{\mathrm{c}} \rvert} \le g \\ L_{\mathrm{c}} & \text{otherwise} \end{cases}\]<p>Per-block switch: take the whole block from the network only where it agrees with the classical receiver on average. \(g\) is set at a percentile of that block statistic in the training condition.</p></div>
+      <div data-rule="3" hidden>\[L = \mathrm{clip}\left(L_{\mathrm{R3}},\ \pm C\right)\]<p>Plain clip: a fixed range for the network's LLRs, not anchored to the classical receiver. It limits confidence, not the deviation from the classical answer.</p></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Gain over the classical receiver at the 10% point<small>The five conditions of the fusion study, paired on shared realizations per seed.</small></div><div class="legend" id="fusion-legend"></div></div>
+      <svg id="fusion" viewBox="0 0 720 320" width="100%" role="img" aria-label="Gain of the bound and of the chosen rule in each condition" style="touch-action:pan-y"></svg>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Does it run in real time?</h2>
+    <p class="sub" id="lat-sub"></p>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Inference time per slot, neural path<small>Hover a bar for details.</small></div><div class="legend" id="lat-legend"></div></div>
+      <svg id="lat" viewBox="0 0 720 220" width="100%" role="img" aria-label="Inference time per slot against the slot budget"></svg>
+      <p class="note-s" id="lat-note"></p>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>More experiments from the paper</h2>
+    <p class="sub">Three further questions the paper answers. Each value is the paper's table as printed; hover a point for its value.</p>
+    <div class="more-grid">
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">A better classical channel estimator<small>Table VIII: 10% error point, \(E_{\mathrm{b}}/N_0\) in dB, lower is better.</small></div><div class="legend" id="m8-legend"></div></div>
+        <svg id="m8" viewBox="0 0 720 260" width="100%" role="img" aria-label="Classical front ends compared"></svg>
+        <p class="note-s" id="m8-note"></p>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Training on varied IQ imbalance<small>Table VI: 10% error point, \(E_{\mathrm{b}}/N_0\) in dB, lower is better.</small></div><div class="legend" id="m6-legend"></div></div>
+        <svg id="m6" viewBox="0 0 720 260" width="100%" role="img" aria-label="Fixed against randomized IQ-imbalance training"></svg>
+        <p class="note-s" id="m6-note"></p>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Two spatial layers (rank-2 MIMO)<small>Tables IV-a and IV-b: 256 transmit elements to 2 receive chains.</small></div></div>
+        <div id="m4"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
   <div class="wrap">
     <h2>How the bound works</h2>
     <p class="sub">Nothing is retrained. The bound is applied to the two receivers' outputs, one bit at a time, just before the decoder.</p>
@@ -251,11 +363,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   </div>
 </section>
 
-<section>
+<section class="alt">
   <div class="wrap about">
     <div>
       <h2>About these results</h2>
-      <p class="sub" style="margin-bottom:14px">Everything on this page was measured in advance on the authors' workstation; nothing here is simulated in your browser. The curves and operating points are the paper's own.</p>
+      <p class="sub" style="margin-bottom:14px">Everything on this page was measured in advance on the authors' workstation; nothing here is simulated in your browser. The curves and operating points come from the paper's measurement campaign, and every value the paper prints is checked against it when the page is built. The data-rate view and the one-bit calculator are computed on the page from those values.</p>
       <ul id="about-list"></ul>
     </div>
     <div>
@@ -285,7 +397,7 @@ const COL={"0":SC.c,"ln2":SC.o,"ln4":SC.o,"ln8":SC.o,"ln16":SC.o,"unbounded":SC.
 const OTHER="#a3a1a9", BAND="#fdae61"; // other bounds: thin grey lines; seed spread: a light-orange band
 const NS="http://www.w3.org/2000/svg";
 const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const st={c:0,d:2};
+const st={c:0,d:2,view:"bler",seeds:false,rule:0,param:2};
 const f2=v=>v.toFixed(2), sgn=v=>(v>0?"+":v<0?"−":"")+Math.abs(v).toFixed(1);
 // every mathematical expression is typeset at build time (window.TEX); a miss is recorded on <html data-tex-miss>
 const T=(tex,plain)=>{const h=window.TEX&&window.TEX[tex];if(h)return h;const r=document.documentElement;r.dataset.texMiss=(r.dataset.texMiss?r.dataset.texMiss+" | ":"")+tex;return plain||tex;};
@@ -344,27 +456,39 @@ function svgEbN0(parent,x,y,anchor,extra){
   return t;
 }
 
-// BLER chart, drawn at the container's real width so its text stays at true size
+// BLER chart, drawn at the container's real width so its text stays at true size. Two views: block error rate (log
+// axis) or data rate, derived on the page as (1 - BLER) x transport-block bits / slot; and the three-seed average or each seed.
 const YMIN=5e-4, svg=document.getElementById("chart");
+const PEAK=M.tb_info_bits/(M.slot_ms*1e-3)/1e6;   // Mbit/s when every block is decoded
 let W,Hh,m,iw,ih,layer,hov,narrow;
 const xs=v=>{const s=C[0].snr;return m.l+(v-s[0])/(s[s.length-1]-s[0])*iw;};
 const ys=v=>{v=Math.max(v,YMIN);return m.t+(0-Math.log10(v))/(0-Math.log10(YMIN))*ih;};
+const tput=b=>(1-b)*PEAK;
+const yv=b=>st.view==="tput"?m.t+(1-tput(b)/PEAK)*ih:ys(b);
 const path=pts=>pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
-// a BLER curve: points with zero block errors are not drawn (no false floor); the path breaks at them
-const curve=(snr,v)=>{let s="",pen=false;snr.forEach((x,i)=>{if(v[i]>0){s+=(pen?"L":"M")+xs(x).toFixed(1)+" "+ys(v[i]).toFixed(1);pen=true;}else pen=false;});return s;};
+// a curve: in the error-rate view points with zero block errors are not drawn (no false floor) and the path breaks there
+const curve=(snr,v)=>{let s="",pen=false;snr.forEach((x,i)=>{if(st.view==="tput"||v[i]>0){s+=(pen?"L":"M")+xs(x).toFixed(1)+" "+yv(v[i]).toFixed(1);pen=true;}else pen=false;});return s;};
 const yOn=(snr,v,xv)=>{for(let i=1;i<snr.length;i++){if(xv<=xs(snr[i])){const a=xs(snr[i-1]),b=xs(snr[i]);if(v[i-1]<=0||v[i]<=0)return null;const f=(xv-a)/(b-a);return ys(v[i-1])+(ys(v[i])-ys(v[i-1]))*f;}}return null;};
 const pct=v=>v===0?"0 errors":(v*100).toFixed(v<0.01?2:1)+"%";
+const fmtv=b=>st.view==="tput"?tput(b).toFixed(1)+" Mbit/s":pct(b);
 function buildChart(){
   W=widthOf(svg);narrow=W<520;Hh=narrow?300:400;
-  m=narrow?{l:46,r:10,t:12,b:46}:{l:60,r:18,t:14,b:50};iw=W-m.l-m.r;ih=Hh-m.t-m.b;
+  m=narrow?{l:50,r:10,t:12,b:46}:{l:66,r:18,t:14,b:50};iw=W-m.l-m.r;ih=Hh-m.t-m.b;
   svg.setAttribute("viewBox",`0 0 ${W} ${Hh}`);svg.innerHTML="";
   const g=el("g",{class:"grid"},svg), a=el("g",{class:"axis"},svg);
-  [1,0.1,0.01,0.001].forEach(v=>{el("line",{x1:m.l,x2:W-m.r,y1:ys(v),y2:ys(v)},g);const t=el("text",{x:m.l-8,y:ys(v)+4,"text-anchor":"end"},a);t.textContent=v>=0.01?(v*100)+"%":(v*100).toFixed(1)+"%";});
+  if(st.view==="tput"){
+    const ticks=[];for(let v=0;v<=PEAK;v+=25)ticks.push(v);
+    ticks.forEach(v=>{const y=m.t+(1-v/PEAK)*ih;el("line",{x1:m.l,x2:W-m.r,y1:y,y2:y},g);const t=el("text",{x:m.l-8,y:y+4,"text-anchor":"end"},a);t.textContent=v;});
+    el("line",{x1:m.l,x2:W-m.r,y1:m.t,y2:m.t,stroke:"#0a0a0a","stroke-dasharray":"3 4","stroke-width":1,opacity:.45},svg);
+    const tt=el("text",{x:m.l+6,y:m.t+14,"text-anchor":"start","font-size":"11.5",fill:"#626162"},svg);tt.textContent="every block decoded: "+PEAK.toFixed(1)+" Mbit/s";
+  }else{
+    [1,0.1,0.01,0.001].forEach(v=>{el("line",{x1:m.l,x2:W-m.r,y1:ys(v),y2:ys(v)},g);const t=el("text",{x:m.l-8,y:ys(v)+4,"text-anchor":"end"},a);t.textContent=v>=0.01?(v*100)+"%":(v*100).toFixed(1)+"%";});
+    el("line",{x1:m.l,x2:W-m.r,y1:ys(0.1),y2:ys(0.1),stroke:"#0a0a0a","stroke-dasharray":"3 4","stroke-width":1,opacity:.45},svg);
+    const tt=el("text",{x:W-m.r-4,y:ys(0.1)-6,"text-anchor":"end","font-size":"11.5",fill:"#626162"},svg);tt.textContent="10% target";
+  }
   C[0].snr.forEach((v,i)=>{if(narrow&&i%2)return;const t=el("text",{x:xs(v),y:Hh-m.b+20,"text-anchor":"middle"},a);t.textContent=v;});
   svgEbN0(svg,m.l+iw/2,Hh-8,"middle"," (dB)");
-  const yl=el("text",{x:12,y:m.t+ih/2,"text-anchor":"middle",transform:`rotate(-90 12 ${m.t+ih/2})`,class:"axis"},svg);yl.textContent="Block error rate";yl.setAttribute("font-size","11.5");yl.setAttribute("fill","#626162");
-  el("line",{x1:m.l,x2:W-m.r,y1:ys(0.1),y2:ys(0.1),stroke:"#0a0a0a","stroke-dasharray":"3 4","stroke-width":1,opacity:.45},svg);
-  const tt=el("text",{x:W-m.r-4,y:ys(0.1)-6,"text-anchor":"end","font-size":"11.5",fill:"#626162"},svg);tt.textContent="10% target";
+  const yl=el("text",{x:12,y:m.t+ih/2,"text-anchor":"middle",transform:`rotate(-90 12 ${m.t+ih/2})`,"font-size":"11.5",fill:"#626162"},svg);yl.textContent=st.view==="tput"?"Data rate (Mbit/s)":"Block error rate";
   layer=el("g",{},svg);hov=el("g",{},svg);
   const hit=el("rect",{x:m.l,y:m.t,width:iw,height:ih,fill:"transparent",style:"cursor:crosshair"},svg);
   hit.addEventListener("pointermove",chartHover);hit.addEventListener("pointerdown",chartHover);
@@ -373,15 +497,20 @@ function buildChart(){
 function drawChart(){
   const c=C[st.c], d=DM[st.d];
   layer.innerHTML="";hov.innerHTML="";
+  const keys=["0",d,"unbounded"].filter((v,i,a)=>a.indexOf(v)===i);
   const order=DM.filter(k=>k!==d&&k!=="0"&&k!=="unbounded");
-  order.forEach(k=>el("path",{d:curve(c.snr,c.curves[k].mean),fill:"none",stroke:OTHER,"stroke-width":1.25},layer));
-  const band=c.curves[d], bi=c.snr.map((s,i)=>i).filter(i=>band.mean[i]>0), bp=bi.map(i=>[xs(c.snr[i]),ys(band.hi[i])]).concat(bi.map(i=>[xs(c.snr[i]),ys(band.lo[i])]).reverse());
-  el("path",{d:path(bp)+"Z",fill:BAND,"fill-opacity":.6,stroke:BAND,"stroke-width":1,"stroke-linejoin":"round"},layer);
+  if(st.seeds){
+    keys.forEach(k=>c.curves[k].seeds.forEach(v=>el("path",{d:curve(c.snr,v),fill:"none",stroke:COL[k],"stroke-width":k===d?2:1.5,"stroke-dasharray":k==="unbounded"?"7 5":null,opacity:.9},layer)));
+  }else{
+    order.forEach(k=>el("path",{d:curve(c.snr,c.curves[k].mean),fill:"none",stroke:OTHER,"stroke-width":1.25},layer));
+    const band=c.curves[d], bi=c.snr.map((s,i)=>i).filter(i=>st.view==="tput"||band.mean[i]>0), bp=bi.map(i=>[xs(c.snr[i]),yv(band.hi[i])]).concat(bi.map(i=>[xs(c.snr[i]),yv(band.lo[i])]).reverse());
+    el("path",{d:path(bp)+"Z",fill:BAND,"fill-opacity":.6,stroke:BAND,"stroke-width":1,"stroke-linejoin":"round"},layer);
     ["0","unbounded"].filter(k=>k!==d).forEach(k=>el("path",{d:curve(c.snr,c.curves[k].mean),fill:"none",stroke:COL[k],"stroke-width":2.25,"stroke-dasharray":k==="unbounded"?"7 5":null,"stroke-linecap":"round"},layer));
-  const sel=el("path",{d:curve(c.snr,c.curves[d].mean),fill:"none",stroke:COL[d],"stroke-width":3.25,"stroke-linecap":"round","stroke-linejoin":"round","stroke-dasharray":d==="unbounded"?"7 5":null},layer);
-  if(!reduce&&d!=="unbounded"){const L=sel.getTotalLength();sel.style.strokeDasharray=L;sel.style.strokeDashoffset=L;sel.getBoundingClientRect();sel.style.transition="stroke-dashoffset .6s ease";sel.style.strokeDashoffset=0;setTimeout(()=>{sel.style.transition="";sel.style.strokeDasharray="none";},700);}
+    const sel=el("path",{d:curve(c.snr,c.curves[d].mean),fill:"none",stroke:COL[d],"stroke-width":3.25,"stroke-linecap":"round","stroke-linejoin":"round","stroke-dasharray":d==="unbounded"?"7 5":null},layer);
+    if(!reduce&&d!=="unbounded"){const L=sel.getTotalLength();sel.style.strokeDasharray=L;sel.style.strokeDashoffset=L;sel.getBoundingClientRect();sel.style.transition="stroke-dashoffset .6s ease";sel.style.strokeDashoffset=0;setTimeout(()=>{sel.style.transition="";sel.style.strokeDasharray="none";},700);}
+  }
   const x=c.crossing[d];
-  if(x.mean!==null){
+  if(x.mean!==null&&st.view!=="tput"){
     const cx=xs(x.mean), cy=ys(0.1);
     // the value sits in the empty lower part of the plot, joined to the marker by a drop line: no curve is covered
     const txt=f2(x.mean)+" dB", pw=txt.length*7.4+16, px=Math.min(Math.max(cx,m.l+pw/2),W-m.r-pw/2);
@@ -395,8 +524,10 @@ function drawChart(){
     const lbl=el("text",{x:px,y:ly+4.5,"text-anchor":"middle","font-size":"12.5","font-weight":"700",fill:"#0a0a0a"},layer);lbl.textContent=txt;
   }
   const lg=document.getElementById("legend");
-  const items=["0",d,"unbounded"].filter((v,i,a)=>a.indexOf(v)===i);
-  lg.innerHTML=items.map(k=>`<span>${SW.line(COL[k],k==="unbounded",k===d?3.25:2.25)}${nameOf(k)}</span>`).join("")+(order.length?`<span>${SW.strip(BAND)}seed spread</span>`+`<span>${SW.line(OTHER,false,1.25)}other bounds</span>`:"");
+  lg.innerHTML=keys.map(k=>`<span>${SW.line(COL[k],k==="unbounded",k===d?3.25:2.25)}${nameOf(k)}</span>`).join("")+
+    (st.seeds?`<span style="color:#626162">one line per seed</span>`:`<span>${SW.strip(BAND)}seed spread</span>`+(order.length?`<span>${SW.line(OTHER,false,1.25)}other bounds</span>`:""));
+  const tn=document.getElementById("tput-note");tn.hidden=st.view!=="tput";
+  tn.innerHTML=`Data rate is derived on this page, not taken from the paper: (1 − block error rate) × ${M.tb_info_bits.toLocaleString("en")} information bits per ${M.slot_ms} ms slot, one transport block per slot, with no retransmissions or link adaptation.`;
   drawTable();
 }
 function chartHover(ev){
@@ -405,10 +536,12 @@ function chartHover(ev){
   hov.innerHTML="";const X=xs(c.snr[i]);
   el("line",{x1:X,x2:X,y1:m.t,y2:m.t+ih,stroke:"#0a0a0a","stroke-width":1,opacity:.22},hov);
   const keys=["0",d,"unbounded"].filter((v,j,a)=>a.indexOf(v)===j);
-  keys.forEach(k=>el("circle",{cx:X,cy:ys(c.curves[k].mean[i]),r:5,fill:COL[k],stroke:"#fff","stroke-width":2},hov));
+  keys.forEach(k=>el("circle",{cx:X,cy:yv(c.curves[k].mean[i]),r:5,fill:COL[k],stroke:"#fff","stroke-width":2},hov));
   const b=c.curves[d];
-  showTip(`<div class="h">${EBN0()} = ${c.snr[i]} dB</div>`+keys.map(k=>row(nameOf(k),pct(c.curves[k].mean[i]),COL[k])).join("")+
-    `<div class="note">Seed range at ${T("\\Delta_{\\max}="+LT[d],"Δmax = "+LP[d])}: ${pct(b.lo[i])} to ${pct(b.hi[i])}. Each seed: ${M.blocks_per_point.toLocaleString("en")} blocks.</div>`,ev.clientX,ev.clientY);
+  const seedLine=k=>c.curves[k].seeds.map((v,j)=>`${M.seeds[j]}: ${fmtv(v[i])}`).join(" · ");
+  showTip(`<div class="h">${EBN0()} = ${c.snr[i]} dB</div>`+keys.map(k=>row(nameOf(k),fmtv(c.curves[k].mean[i]),COL[k])).join("")+
+    (st.seeds?`<div class="note">Each seed, ${T("\\Delta_{\\max}="+LT[d],"Δmax = "+LP[d])}: ${seedLine(d)}.</div>`
+             :`<div class="note">Seed range at ${T("\\Delta_{\\max}="+LT[d],"Δmax = "+LP[d])}: ${fmtv(b.lo[i])} to ${fmtv(b.hi[i])}. Each seed: ${M.blocks_per_point.toLocaleString("en")} blocks.</div>`),ev.clientX,ev.clientY);
 }
 
 // table view
@@ -482,6 +615,12 @@ const sl=v=>Math.sign(v)*Math.log10(1+Math.abs(v)), SMAX=3.2;
 const sy=v=>sm.t+(SMAX-sl(v))/(2*SMAX)*sh;
 function sizeSlot(){SWd=widthOf(S);const nar=SWd<520;SH=nar?250:300;sm=nar?{l:48,r:8,t:12,b:28}:{l:60,r:14,t:14,b:30};sw=SWd-sm.l-sm.r;sh=SH-sm.t-sm.b;NB=nar?40:96;S.setAttribute("viewBox",`0 0 ${SWd} ${SH}`);}
 function drawSlot(first){
+  const none=document.getElementById("slot-none");
+  if(!C[st.c].slot){S.style.display="none";none.hidden=false;slotFrom=null;
+    none.textContent=`No LLRs were stored for this condition (${C[st.c].detail}), so this view isn't available for it. Pick another condition with the buttons at the top.`;
+    ["slot-legend","counters"].forEach(id=>document.getElementById(id).innerHTML="");document.getElementById("slot-small").textContent="";
+    document.getElementById("slot-sub").textContent="Real numbers from one received slot, for each condition whose LLRs were stored.";return;}
+  S.style.display="";none.hidden=true;
   const c=C[st.c], s=c.slot, d=DM[st.d], Dv=VAL[d], n=Math.min(NB,s.l2.length), bw=sw/n;
   const L2=s.l2.slice(0,n), R3=s.r3.slice(0,n), BIT=s.bit.slice(0,n), rr=Math.max(2.2,Math.min(3.4,bw*0.3));
   if(first){
@@ -531,6 +670,189 @@ function drawSlot(first){
   document.getElementById("counters").innerHTML=`<span>Bits moved off the classical value: <b>${moved} of ${n}</b></span><span>Hard decisions changed: <b>${flips} of ${n}</b></span><span>Largest move: <b>${Dv===Infinity?Math.max(...out.map((v,i)=>Math.abs(v-L2[i]))).toFixed(1):Dv===0?"0":"≤ "+Dv.toFixed(3)}</b></span>`;
 }
 
+// hover for any mark: fn() returns the tooltip's HTML
+const tipOn=(node,fn)=>{node.style.cursor="help";const sh=e=>showTip(fn(),e.clientX,e.clientY);node.addEventListener("pointerenter",sh);node.addEventListener("pointermove",sh);node.addEventListener("pointerdown",sh);node.addEventListener("pointerleave",hideTip);};
+const mark=(g,shape,x,y,col,r)=>{r=r||5;
+  if(shape==="dot")return el("circle",{cx:x,cy:y,r,fill:col,stroke:"#fff","stroke-width":1.5},g);
+  if(shape==="ring")return el("circle",{cx:x,cy:y,r,fill:"#fff",stroke:col,"stroke-width":2},g);
+  if(shape==="square")return el("rect",{x:x-r,y:y-r,width:2*r,height:2*r,fill:col,stroke:"#fff","stroke-width":1.5},g);
+  if(shape==="osquare")return el("rect",{x:x-r+1,y:y-r+1,width:2*r-2,height:2*r-2,fill:"#fff",stroke:col,"stroke-width":2},g);
+  return el("path",{d:`M${x} ${y-r-1}L${x+r+1} ${y}L${x} ${y+r+1}L${x-r-1} ${y}Z`,fill:"#fff",stroke:col,"stroke-width":2},g);};
+const SWS=(shape,col)=>`<svg width="14" height="14" aria-hidden="true">${{dot:`<circle cx="7" cy="7" r="5" fill="${col}"/>`,ring:`<circle cx="7" cy="7" r="4.5" fill="#fff" stroke="${col}" stroke-width="2"/>`,square:`<rect x="2" y="2" width="10" height="10" fill="${col}"/>`,osquare:`<rect x="2.5" y="2.5" width="9" height="9" fill="#fff" stroke="${col}" stroke-width="2"/>`,diamond:`<path d="M7 1L13 7L7 13L1 7Z" fill="#fff" stroke="${col}" stroke-width="2"/>`}[shape]}</svg>`;
+const NUMW=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine"];
+const shortOf=key=>(C.find(c=>c.key===key)||{}).short||key;
+
+// the gain-versus-safety frontier: 10% point against the bound, one line per condition
+const FR=document.getElementById("frontier");
+function drawFrontier(){
+  const FW=widthOf(FR), nar=FW<520, FH=nar?320:380, fm=nar?{l:50,r:14,t:40,b:56}:{l:66,r:24,t:44,b:58}, fiw=FW-fm.l-fm.r, fih=FH-fm.t-fm.b;
+  FR.setAttribute("viewBox",`0 0 ${FW} ${FH}`);FR.innerHTML="";
+  const vals=C.flatMap(c=>DM.map(d=>c.crossing[d].mean).filter(v=>v!==null));
+  const lo=Math.floor(Math.min(...vals))-0.25, hi=Math.ceil(Math.max(...vals))+0.25;
+  const fx=i=>fm.l+i/(DM.length-1)*fiw, fy=v=>v===null?fm.t-22:fm.t+(hi-v)/(hi-lo)*fih;
+  const g=el("g",{class:"grid"},FR), a=el("g",{class:"axis"},FR);
+  for(let v=Math.ceil(lo);v<=Math.floor(hi);v++){el("line",{x1:fm.l,x2:FW-fm.r,y1:fy(v),y2:fy(v)},g);const t=el("text",{x:fm.l-8,y:fy(v)+4,"text-anchor":"end"},a);t.textContent=v;}
+  const nr=el("text",{x:fm.l+4,y:fm.t-28,"text-anchor":"start","font-size":"11",fill:"#626162"},FR);nr.textContent="not reached:";
+  el("line",{x1:fm.l,x2:FW-fm.r,y1:fm.t-10,y2:fm.t-10,stroke:"#e9e8eb","stroke-dasharray":"2 3"},FR);
+  el("rect",{x:fx(st.d)-14,y:fm.t-32,width:28,height:fih+32,fill:"#e00800",opacity:.06,rx:6},FR);
+  DM.forEach((d,i)=>{const t=el("text",{x:fx(i),y:FH-fm.b+20,"text-anchor":"middle",class:"mtext","font-size":"13"},FR);t.textContent=LP[d];
+    if(i===0||i===DM.length-1){const s=el("text",{x:i===0?fx(i)-6:fx(i)+6,y:FH-fm.b+36,"text-anchor":i===0?"start":"end","font-size":"11",fill:"#626162"},FR);s.textContent=i===0?"classical":"network alone";}});
+  const yl=el("text",{x:12,y:fm.t+fih/2,"text-anchor":"middle",transform:`rotate(-90 12 ${fm.t+fih/2})`,"font-size":"11.5",fill:"#626162"},FR);yl.textContent="10% error point (dB)";
+  const order=C.map((c,i)=>i).filter(i=>i!==st.c).concat([st.c]);
+  order.forEach(ci=>{const c=C[ci], selc=ci===st.c, col=selc?"#e00800":OTHER;
+    let dstr="",pen=false;DM.forEach((d,i)=>{const v=c.crossing[d].mean;if(v!==null){dstr+=(pen?"L":"M")+fx(i).toFixed(1)+" "+fy(v).toFixed(1);pen=true;}else pen=false;});
+    el("path",{d:dstr,fill:"none",stroke:col,"stroke-width":selc?3:1.5,"stroke-linejoin":"round","stroke-linecap":"round"},FR);
+    DM.forEach((d,i)=>{const v=c.crossing[d].mean, y=fy(v), endc=i===0?COL["0"]:i===DM.length-1?COL.unbounded:col;
+      const gg=el("g",{},FR);
+      if(v===null)mark(gg,"ring",fx(i),y,selc?endc:OTHER,selc?5.5:4);else mark(gg,"dot",fx(i),y,selc||i===0||i===DM.length-1?endc:OTHER,selc?6:3.5);
+      el("circle",{cx:fx(i),cy:y,r:11,fill:"transparent"},gg);
+      gg.addEventListener("click",()=>setC(ci));
+      tipOn(gg,()=>{const cl=c.crossing["0"].mean, x=c.crossing[d];
+        return `<div class="h">${c.short}</div>`+row(nameOf(d),x.mean===null?"not reached":f2(x.mean)+" dB",COL[d])+
+          (x.mean===null?`<div class="note">Lowest error rate in the swept range: ${(x.floor*100).toFixed(0)}%.</div>`:d==="0"?`<div class="note">Seed SD ${f2(x.sd)} dB. Click to select this condition.</div>`:
+          `<div class="note">${Math.abs(cl-x.mean)<0.005?"Level with":f2(Math.abs(cl-x.mean))+" dB "+(cl>x.mean?"better than":"behind")} classical. Seed SD ${f2(x.sd)} dB. Click to select this condition.</div>`);});});
+  });
+  document.getElementById("frontier-legend").innerHTML=`<span>${SW.line("#e00800",false,3)}${C[st.c].short}</span><span>${SW.line(OTHER,false,1.5)}other conditions</span><span>${SWS("dot",COL["0"])}classical end</span><span>${SWS("dot",COL.unbounded)}network-alone end</span>`;
+}
+
+// what the bound means for one bit: exact arithmetic on the two LLRs
+const CS=document.getElementById("calc-svg"), clIn=document.getElementById("cl"), cnIn=document.getElementById("cn");
+const sig=L=>1/(1+Math.exp(-L)), sg1=v=>(v>0?"+":v<0?"−":"")+Math.abs(v).toFixed(1);
+function drawCalc(){
+  const Lc=+clIn.value, Ln=+cnIn.value, d=DM[st.d], Dv=VAL[d];
+  const Lo=Dv===Infinity?Ln:Math.min(Math.max(Ln,Lc-Dv),Lc+Dv);
+  [clIn,cnIn].forEach(r=>r.style.setProperty("--fill",((+r.value+8)/16*100)+"%"));
+  document.getElementById("cl-out").textContent=sg1(Lc);document.getElementById("cn-out").textContent=sg1(Ln);
+  document.getElementById("calc-d").innerHTML=`Bound: ${T("\\Delta_{\\max}="+LT[d],"Δmax = "+LP[d])}, set with the slider at the top.`;
+  const CW=widthOf(CS), CH=150, cm={l:24,r:24,t:34,b:40}, ciw=CW-cm.l-cm.r, X=v=>cm.l+(Math.max(-8,Math.min(8,v))+8)/16*ciw, Y=cm.t+36;
+  CS.setAttribute("viewBox",`0 0 ${CW} ${CH}`);CS.innerHTML="";
+  const a=el("g",{class:"axis"},CS);
+  el("line",{x1:cm.l,x2:CW-cm.r,y1:Y,y2:Y,stroke:"#d1d0d4","stroke-width":2},CS);
+  [-8,-6,-4,-2,0,2,4,6,8].forEach(v=>{el("line",{x1:X(v),x2:X(v),y1:Y-4,y2:Y+4,stroke:"#d1d0d4"},CS);const t=el("text",{x:X(v),y:Y+20,"text-anchor":"middle"},a);t.textContent=v>0?"+"+v:v;});
+  el("line",{x1:X(0),x2:X(0),y1:cm.t-6,y2:Y+6,stroke:"#0a0a0a","stroke-dasharray":"3 3",opacity:.4},CS);
+  const l0=el("text",{x:X(0)-8,y:cm.t-10,"text-anchor":"end","font-size":"11.5",fill:"#626162"},CS);l0.textContent="← favours a 0";
+  const l1=el("text",{x:X(0)+8,y:cm.t-10,"text-anchor":"start","font-size":"11.5",fill:"#626162"},CS);l1.textContent="favours a 1 →";
+  const lab=el("text",{x:cm.l+ciw/2,y:CH-6,"text-anchor":"middle","font-size":"11.5",fill:"#626162"},CS);lab.textContent="LLR";
+  if(Dv!==0){const x1=Dv===Infinity?cm.l:X(Lc-Dv), x2=Dv===Infinity?CW-cm.r:X(Lc+Dv);const b=el("rect",{x:x1,y:Y-13,width:Math.max(x2-x1,1),height:26,rx:6,fill:SC.band,opacity:.18},CS);
+    tipOn(b,()=>`<div class="h">Allowed range</div>`+row(T("L_{\\mathrm{c}}\\pm\\Delta_{\\max}","Lc ± Δmax"),Dv===Infinity?"unbounded":`${sg1(Lc-Dv)} to ${sg1(Lc+Dv)}`));}
+  const gC=el("g",{},CS);el("rect",{x:X(Lc)-2,y:Y-18,width:4,height:36,rx:2,fill:SC.c},gC);
+  tipOn(gC,()=>`<div class="h">Classical</div>`+row(T("L_{\\mathrm{c}}","Lc"),sg1(Lc),SC.c)+row(T("P(b=1)","P(b=1)"),(sig(Lc)*100).toFixed(1)+"%"));
+  const gN=el("g",{},CS);mark(gN,"ring",X(Ln),Y,SC.n,7);tipOn(gN,()=>`<div class="h">Network alone</div>`+row(T("L_{\\mathrm{R3}}","LR3"),sg1(Ln),SC.n)+row(T("P(b=1)","P(b=1)"),(sig(Ln)*100).toFixed(1)+"%"));
+  const oc=d==="0"?SC.c:d==="unbounded"?SC.n:SC.o;
+  const gO=el("g",{},CS);mark(gO,"dot",X(Lo),Y,oc,6.5);tipOn(gO,()=>`<div class="h">Bounded output</div>`+row(T("L_{\\mathrm{R5}}","LR5"),sg1(Lo),oc)+row(T("P(b=1)","P(b=1)"),(sig(Lo)*100).toFixed(1)+"%"));
+  document.getElementById("calc-legend").innerHTML=`<span>${SW.tick(SC.c)}Classical ${T("L_{\\mathrm{c}}","Lc")}</span><span>${SW.ring(SC.n,3.6)}Network ${T("L_{\\mathrm{R3}}","LR3")}</span>`+(Dv!==0&&Dv!==Infinity?`<span>${SW.vbar(SC.band)}Allowed range</span>`:"")+`<span>${SW.dot(oc,3.8)}Output ${T("L_{\\mathrm{R5}}","LR5")}</span>`;
+  const flip=Math.sign(Lo)!==Math.sign(Lc)&&Lc!==0;
+  const msg=Dv===0?"The bound is zero: the output is the classical LLR exactly.":Dv===Infinity?"No bound: the output is the network's LLR, wherever it lies.":
+    flip?`The output's decision differs from the classical one. That is possible only because the classical confidence, ${T("\\lvert L_{\\mathrm{c}}\\rvert","|Lc|")} = ${Math.abs(Lc).toFixed(1)}, is below the bound.`:
+    Math.abs(Lc)>=Dv?`The classical decision cannot be overturned here: ${T("\\lvert L_{\\mathrm{c}}\\rvert","|Lc|")} = ${Math.abs(Lc).toFixed(1)} is at least the bound, so the output keeps its sign.`:
+    "The output keeps the classical decision; with this network value it moves toward the network but does not cross zero.";
+  document.getElementById("calc-out").innerHTML=
+    `<div class="stat"><div class="v">${(sig(Lo)*100).toFixed(1)}%</div><div class="k">${T("P(b=1)","P(b=1)")} after the bound (classical ${(sig(Lc)*100).toFixed(1)}%, network ${(sig(Ln)*100).toFixed(1)}%)</div></div>`+
+    `<div class="stat"><div class="v">${Dv===Infinity?"none":"× "+Math.exp(Dv).toFixed(2)}</div><div class="k">largest change of this bit's odds, ${T("e^{\\Delta_{\\max}}","e^Δmax")}</div></div>`+
+    `<div class="stat"><div class="v">${sg1(Lo-Lc)}</div><div class="k">move from the classical LLR (at most ${Dv===Infinity?"unbounded":Dv.toFixed(3)})</div></div>`+
+    `<div class="calc-msg">${msg}</div>`;
+}
+clIn.addEventListener("input",drawCalc);cnIn.addEventListener("input",drawCalc);
+
+// other ways to combine the two receivers: the fusion rules against the bound, gain over classical per condition
+const FUS=D.fusion, FCN=FUS.conditions, FLAB={cdlC_irr25:"Training",irr20:"Harsher IQ",irr35:"Milder IQ",cdlD:"CDL-D",cdlE:"CDL-E"};
+const RULES=[
+  {k:"F1",name:"Blend",p:[["0",T("\\lambda=0","λ = 0")+" · classical"],["0.25",T("\\lambda=0.25","λ = 0.25")],["0.5",T("\\lambda=0.5","λ = 0.5")],["0.75",T("\\lambda=0.75","λ = 0.75")],["1",T("\\lambda=1","λ = 1")+" · network"]]},
+  {k:"F2",name:"Confidence pick",p:[["inf",T("\\tau=\\infty","τ = ∞")+" · classical"],["p90",T("\\tau","τ")+" 90th pct."],["p75",T("\\tau","τ")+" 75th pct."],["p50",T("\\tau","τ")+" median"],["0",T("\\tau=0","τ = 0")+" · network"]]},
+  {k:"F3",name:"Per-block switch",p:[["0",T("g=0","g = 0")+" · classical"],["p50",T("g","g")+" median"],["p75",T("g","g")+" 75th pct."],["p90",T("g","g")+" 90th pct."],["inf",T("g=\\infty","g = ∞")+" · network"]]},
+  {k:"F4",name:"Plain clip",p:[["0.6931471805599453",T("C=\\ln 2","C = ln 2")],["1.3862943611198906",T("C=\\ln 4","C = ln 4")],["2.0794415416798357",T("C=\\ln 8","C = ln 8")],["2.772588722239781",T("C=\\ln 16","C = ln 16")],["1e6",T("C\\to\\infty","C → ∞")+" · network"]]}];
+const RULEC="#8c8a90";
+const ruleSeg=document.getElementById("rule-seg"), paramSeg=document.getElementById("param-seg"), FS=document.getElementById("fusion");
+RULES.forEach((r,i)=>{const b=document.createElement("button");b.textContent=r.name;b.onclick=()=>{st.rule=i;st.param=Math.min(st.param,r.p.length-1);fusionControls();drawFusion();};ruleSeg.appendChild(b);});
+function fusionControls(){
+  [...ruleSeg.children].forEach((b,i)=>b.setAttribute("aria-pressed",i===st.rule));
+  paramSeg.innerHTML="";RULES[st.rule].p.forEach(([v,lab],i)=>{const b=document.createElement("button");b.innerHTML=lab;b.setAttribute("aria-pressed",i===st.param);b.onclick=()=>{st.param=i;fusionControls();drawFusion();};paramSeg.appendChild(b);});
+  document.querySelectorAll("#rule-def [data-rule]").forEach(e=>e.hidden=+e.dataset.rule!==st.rule);
+}
+function drawFusion(){
+  const d=DM[st.d], R=RULES[st.rule], spec=R.k+":"+R.p[st.param][0], bspec="R5:"+d;
+  const all=FCN.flatMap(k=>[FUS.points[k][spec],FUS.points[k][bspec]].flatMap(p=>p.gain===undefined?[]:[p.gain_lo,p.gain_hi]));
+  const lo=Math.min(-0.5,Math.floor(Math.min(...all,0)*2)/2), hi=Math.max(0.5,Math.ceil(Math.max(...all,0)*2)/2);
+  const FW=widthOf(FS), nar=FW<520, FH=nar?300:340, m2={l:nar?46:60,r:14,t:16,b:44}, iw2=FW-m2.l-m2.r, ih2=FH-m2.t-m2.b;
+  FS.setAttribute("viewBox",`0 0 ${FW} ${FH}`);FS.innerHTML="";
+  const Y=v=>m2.t+(hi-v)/(hi-lo)*ih2, gw=iw2/FCN.length, bw=Math.min(34,gw*0.28);
+  const g=el("g",{class:"grid"},FS), a=el("g",{class:"axis"},FS);
+  for(let v=Math.ceil(lo*2)/2;v<=hi+1e-9;v+=0.5){el("line",{x1:m2.l,x2:FW-m2.r,y1:Y(v),y2:Y(v),stroke:Math.abs(v)<1e-9?"#0a0a0a":null,opacity:Math.abs(v)<1e-9?.5:null},g);const t=el("text",{x:m2.l-8,y:Y(v)+4,"text-anchor":"end"},a);t.textContent=(v>0?"+":"")+v.toFixed(1);}
+  const yl=el("text",{x:12,y:m2.t+ih2/2,"text-anchor":"middle",transform:`rotate(-90 12 ${m2.t+ih2/2})`,"font-size":"11.5",fill:"#626162"},FS);yl.textContent="gain over classical (dB)";
+  FCN.forEach((k,gi)=>{const cx=m2.l+gw*(gi+0.5);
+    const t=el("text",{x:cx,y:FH-m2.b+20,"text-anchor":"middle","font-size":"12",fill:"#0a0a0a"},FS);t.textContent=FLAB[k]||shortOf(k);
+    [[bspec,SC.o,-1,nameOf(d)],[spec,RULEC,1,R.name+", "+R.p[st.param][1]]].forEach(([sp,col,side,lab])=>{const p=FUS.points[k][sp], x=cx+side*(bw/2+3);
+      const gg=el("g",{},FS);
+      if(p.gain===undefined){el("rect",{x:x-bw/2,y:Y(0),width:bw,height:Y(lo)-Y(0),fill:"#fff",stroke:col,"stroke-dasharray":"3 3","stroke-width":1.25,rx:3},gg);
+        const nt=el("text",{x,y:Y(lo)-6,"text-anchor":"middle","font-size":"10",fill:"#626162"},gg);nt.textContent="none";}
+      else{const y0=Y(Math.max(0,p.gain)), y1=Y(Math.min(0,p.gain));el("rect",{x:x-bw/2,y:y0,width:bw,height:Math.max(y1-y0,1.5),fill:col,rx:3},gg);
+        el("line",{x1:x,x2:x,y1:Y(p.gain_hi),y2:Y(p.gain_lo),stroke:"#0a0a0a","stroke-width":1.25},gg);
+        [p.gain_hi,p.gain_lo].forEach(v=>el("line",{x1:x-4,x2:x+4,y1:Y(v),y2:Y(v),stroke:"#0a0a0a","stroke-width":1.25},gg));}
+      el("rect",{x:x-bw/2-3,y:m2.t,width:bw+6,height:ih2,fill:"transparent"},gg);
+      tipOn(gg,()=>`<div class="h">${shortOf(k)}</div>`+row(lab,p.gain===undefined?"10% not reached":(p.gain>=0?"+":"−")+f2(Math.abs(p.gain))+" dB",col)+
+        (p.gain===undefined?`<div class="note">Lowest error rate in the swept range: ${(p.min_bler*100).toFixed(0)}% (three-seed mean).</div>`:
+        `<div class="note">10% point ${f2(p.mean)} dB; gain per seed ${p.gain_lo>=0?"+":"−"}${f2(Math.abs(p.gain_lo))} to ${p.gain_hi>=0?"+":"−"}${f2(Math.abs(p.gain_hi))} dB.</div>`));});
+  });
+  document.getElementById("fusion-legend").innerHTML=`<span>${SWS("square",SC.o)}${nameOf(d)}</span><span>${SWS("square",RULEC)}${R.name}, ${R.p[st.param][1]}</span><span style="color:#626162">zero line: the classical receiver · dashed: 10% not reached</span>`;
+}
+
+// does it run in real time: Table II latency per slot against the slot
+const LS=document.getElementById("lat");
+function drawLatency(){
+  const t=D.tables.II, li=t.header.findIndex(h=>/Latency/i.test(h))-1, xi=t.header.findIndex(h=>/slot/i.test(h)&&!/Latency/i.test(h))-1, ai=t.header.findIndex(h=>/Accuracy/i.test(h))-1;
+  const rows=t.rows.filter(r=>r.cells[li]&&r.cells[li].mean!==undefined), other=t.rows.filter(r=>!(r.cells[li]&&r.cells[li].mean!==undefined));
+  const name=l=>l.replace(/^R3 \/ R5,\s*/,"");
+  const LW=widthOf(LS), nar=LW<520, lw=nar?120:250, rh=40, LH=24+rows.length*rh+30, xmax=Math.max(...rows.map(r=>r.cells[li].mean))*1.12;
+  LS.setAttribute("viewBox",`0 0 ${LW} ${LH}`);LS.innerHTML="";
+  const x0=lw, x1=LW-(nar?60:150), X=v=>x0+v/xmax*(x1-x0), a=el("g",{class:"axis"},LS);
+  for(let v=0;v<=xmax;v+=0.5){el("line",{x1:X(v),x2:X(v),y1:16,y2:LH-24,stroke:"#e9e8eb"},LS);const tt=el("text",{x:X(v),y:LH-8,"text-anchor":"middle"},a);tt.textContent=v.toFixed(1)+" ms";}
+  rows.forEach((r,i)=>{const y=24+i*rh, v=r.cells[li].mean, ok=v<=M.slot_ms, gg=el("g",{},LS);
+    const tl=el("text",{x:x0-10,y:y+rh/2-2,"text-anchor":"end","font-size":nar?"11":"12.5",fill:"#0a0a0a"},gg);tl.textContent=name(r.label);
+    el("rect",{x:x0,y:y+8,width:Math.max(X(v)-x0,2),height:rh-18,rx:4,fill:SC.n,opacity:ok?1:.45},gg);
+    const vl=el("text",{x:Math.max(X(v),X(M.slot_ms))+10,y:y+rh/2+2,"font-size":"12.5","font-weight":"600",fill:"#0a0a0a"},gg);vl.textContent=`${r.cells[li].text}${nar?"":" · "+(r.cells[xi]?r.cells[xi].text:"")+" the slot"}`;
+    el("rect",{x:0,y:y,width:LW,height:rh,fill:"transparent"},gg);
+    tipOn(gg,()=>`<div class="h">${name(r.label)}</div>`+row("Time per slot",r.cells[li].text,SC.n)+row("Share of the slot",r.cells[xi]?r.cells[xi].text:"–")+row("Accuracy",r.cells[ai]?r.cells[ai].text:"–")+`<div class="note">${ok?"Within":"Over"} the ${M.slot_ms} ms slot.</div>`);});
+  el("line",{x1:X(M.slot_ms),x2:X(M.slot_ms),y1:10,y2:LH-24,stroke:SC.o,"stroke-width":2,"stroke-dasharray":"5 4"},LS);
+  const bl=el("text",{x:X(M.slot_ms)+6,y:14,"font-size":"11.5",fill:SC.o,"font-weight":"600"},LS);bl.textContent=`slot: ${M.slot_ms} ms`;
+  document.getElementById("lat-legend").innerHTML=`<span>${SWS("square",SC.n)}within the slot</span><span><svg width="14" height="14" aria-hidden="true"><rect x="2" y="2" width="10" height="10" fill="${SC.n}" opacity=".45"/></svg>over the slot</span><span>${SW.line(SC.o,true,2)}slot budget</span>`;
+  document.getElementById("lat-sub").textContent=`The network's convolutional backbone, timed on an NVIDIA RTX 6000 Ada GPU at ${M.n_prb} resource blocks, against the ${M.slot_ms} ms slot it has to fit in (Table II of the paper). The bound itself adds a clip per bit, which is negligible.`;
+  document.getElementById("lat-note").textContent=other.map(r=>`${/classical/i.test(r.label)?"The classical receiver":r.label}: ${r.cells[li]?r.cells[li].text.replace(/†/g,""):"–"}.`).join(" ")+" FP16 alone is fast but loses accuracy; keeping the sensitive layers in FP32 (mixed precision) fits the slot without loss.";
+}
+
+// more experiments: the paper's tables as dot plots, one row per condition
+function dotPlot(svgEl,rows,series,legendEl){
+  const Wd=widthOf(svgEl), nar=Wd<520, lw=nar?96:190, rh=nar?34:32, top=14, Hd=top+rows.length*rh+40;
+  svgEl.setAttribute("viewBox",`0 0 ${Wd} ${Hd}`);svgEl.innerHTML="";
+  const vals=rows.flatMap(r=>r.cells.filter(c=>c&&c.mean!==undefined).map(c=>c.mean));
+  const lo=Math.floor(Math.min(...vals))-0.5, hi=Math.ceil(Math.max(...vals))+0.5, nrx=Wd-(nar?26:46), x0=lw, x1=nrx-(nar?34:56), X=v=>x0+(v-lo)/(hi-lo)*(x1-x0);
+  const a=el("g",{class:"axis"},svgEl);
+  for(let v=Math.ceil(lo);v<=hi;v+=(hi-lo>6?2:1)){el("line",{x1:X(v),x2:X(v),y1:top-4,y2:top+rows.length*rh,stroke:"#e9e8eb"},svgEl);const t=el("text",{x:X(v),y:top+rows.length*rh+16,"text-anchor":"middle"},a);t.textContent=v;}
+  svgEbN0(svgEl,(x0+x1)/2,Hd-4,"middle"," (dB), lower is better");
+  const nh=el("text",{x:nrx,y:top+rows.length*rh+16,"text-anchor":"middle","font-size":"10.5",fill:"#626162"},svgEl);nh.textContent="not reached";
+  rows.forEach((r,ri)=>{const y=top+ri*rh+rh/2;
+    const tl=el("text",{x:x0-12,y:y+4,"text-anchor":"end","font-size":nar?"11":"12.5",fill:"#0a0a0a"},svgEl);tl.textContent=r.label;
+    el("line",{x1:x0,x2:x1,y1:y,y2:y,stroke:"#e9e8eb","stroke-width":5,"stroke-linecap":"round"},svgEl);
+    series.forEach((s,si)=>{const c=r.cells[si];if(!c||(c.mean===undefined&&!c.nr))return;
+      const yy=y+(si-(series.length-1)/2)*3, x=c.nr?nrx+(si-(series.length-1)/2)*7:X(c.mean), gg=el("g",{},svgEl);
+      mark(gg,s.shape,x,yy,s.color,c.nr?4.5:5.5);el("circle",{cx:x,cy:yy,r:10,fill:"transparent"},gg);
+      tipOn(gg,()=>`<div class="h">${r.label}</div>`+row(s.name,c.nr?"not reached":c.mean.toFixed(2)+" dB",s.color)+(c.sd!==undefined?`<div class="note">Cross-seed SD ${c.sd.toFixed(2)} dB.</div>`:""));});});
+  legendEl.innerHTML=series.map(s=>`<span>${SWS(s.shape,s.color)}${s.name}</span>`).join("");
+}
+function drawMore(){
+  const t8=D.tables.VIII, s8=[{name:"Classical, LS (the baseline)",color:SC.c,shape:"dot"},{name:"Classical, LMMSE, practical prior",color:SC.c,shape:"square"},{name:"Classical, LMMSE, oracle prior (diagnostic)",color:SC.c,shape:"diamond"},{name:"Network alone, LS-fed",color:SC.n,shape:"ring"},{name:"Network alone, LMMSE-fed",color:SC.n,shape:"osquare"}];
+  dotPlot(document.getElementById("m8"),t8.rows.map(r=>({label:shortOf(r.key),cells:r.cells})),s8,document.getElementById("m8-legend"));
+  const in8=t8.rows.find(r=>r.key==="cdlC_irr25");
+  document.getElementById("m8-note").textContent=`A stronger classical channel estimator changes the picture. In the training condition the practical-prior LMMSE chain reaches ${in8.cells[1].mean.toFixed(2)} dB, ahead of the LS-fed network (${in8.cells[3].mean.toFixed(2)} dB): the headline gain is over the deployed LS baseline. With its prior fitted on CDL-C, though, the LMMSE chain does not reach 10% on CDL-D or CDL-E at all.`;
+  const t6=D.tables.VI, s6=[{name:"Classical",color:SC.c,shape:"dot"},{name:"Fixed-IRR training, bound ln 4",color:SC.o,shape:"dot"},{name:"Fixed-IRR training, network alone",color:SC.n,shape:"ring"},{name:"Randomized-IRR training, bound ln 4",color:SC.o,shape:"square"},{name:"Randomized-IRR training, network alone",color:SC.n,shape:"osquare"}];
+  dotPlot(document.getElementById("m6"),t6.rows.map(r=>({label:shortOf(r.key),cells:r.cells})),s6,document.getElementById("m6-legend"));
+  const allAhead=t6.rows.every(r=>[1,3].every(j=>r.cells[j].mean!==undefined&&r.cells[j].mean<r.cells[0].mean));
+  const nr20=t6.rows.filter(r=>r.key==="irr20").every(r=>r.cells[2].nr&&r.cells[4].nr);
+  document.getElementById("m6-note").textContent=`One network is trained at a fixed IQ imbalance, the other with it redrawn during training. ${nr20?"Randomizing does not make the network alone reach 10% at the harsher imbalance.":""} ${allAhead?"With the bound at ln 4, both stay ahead of the classical receiver in every condition.":""}`.trim();
+  const a=D.tables["IV-a"], b=D.tables["IV-b"], tbl=t=>`<table class="mini"><thead><tr>${t.header.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r=>`<tr><td>${r.label}</td>${r.cells.map(c=>`<td class="num">${c.text}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  const noneReach=b.rows.every(r=>r.cells[0].nr);
+  document.getElementById("m4").innerHTML=`<p class="note-s" style="margin-top:0">At rank 2 the classical receiver with IQ-imbalance compensation reaches 10% block errors at ${a.rows.find(r=>/L2-real/.test(r.label)).cells[0].mean.toFixed(2)} dB per-stream SNR. ${noneReach?"None of the three neural variants reaches 10% at all, so there is no neural gain to bound in this configuration.":""}</p>`+tbl(a)+tbl(b);
+}
+
 // state
 function render(slotFirst){
   const c=C[st.c], d=DM[st.d];
@@ -539,16 +861,19 @@ function render(slotFirst){
   [...ticks.children].forEach((s,i)=>s.classList.toggle("on",i===st.d));
   [...chips.children].forEach((b,i)=>b.setAttribute("aria-pressed",i===st.c));
   document.getElementById("cond-title").textContent=c.short;
-  document.getElementById("cond-sub").textContent=c.detail+". "+(st.c===0?"The condition the network was trained on.":"The network never saw this condition in training.");
-  hideTip();drawChart();kpis();drawCards();drawSlot(slotFirst);
+  document.getElementById("cond-sub").textContent=c.detail+". "+(st.c===0?"The condition the network was trained on.":c.key==="delay300"?"A longer delay spread than in training; the paper treats it as a stability check rather than a shift.":"The network never saw this condition in training.");
+  document.getElementById("cards-title").textContent=NUMW[C.length]+" conditions, one bound";
+  hideTip();drawChart();kpis();drawCards();drawSlot(slotFirst);drawFrontier();drawFusion();drawCalc();
   try{history.replaceState(null,"","#c="+c.key+"&d="+d);}catch(e){}
 }
 function setD(i){st.d=i;render(false);}
 function setC(i){const same=i===st.c;st.c=i;render(!same);}
 (function fromHash(){const h=new URLSearchParams(location.hash.slice(1));const ci=C.findIndex(c=>c.key===h.get("c")),di=DM.indexOf(h.get("d"));if(ci>=0)st.c=ci;if(di>=0)st.d=di;range.value=st.d;})();
-buildChart();sizeSlot();render(true);
+document.querySelectorAll("#view-seg button").forEach(btn=>btn.onclick=()=>{st.view=btn.dataset.v;document.querySelectorAll("#view-seg button").forEach(x=>x.setAttribute("aria-pressed",x===btn));buildChart();drawChart();});
+document.querySelectorAll("#seed-seg button").forEach(btn=>btn.onclick=()=>{st.seeds=btn.dataset.s==="1";document.querySelectorAll("#seed-seg button").forEach(x=>x.setAttribute("aria-pressed",x===btn));drawChart();});
+fusionControls();buildChart();sizeSlot();render(true);drawLatency();drawMore();
 let rz=null,lastW=W,lastS=SWd;
-window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(widthOf(svg)===lastW&&widthOf(S)===lastS)return;buildChart();sizeSlot();lastW=W;lastS=SWd;drawChart();drawSlot(true);},150);});
+window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(widthOf(svg)===lastW&&widthOf(S)===lastS)return;buildChart();sizeSlot();lastW=W;lastS=SWd;drawChart();drawSlot(true);drawFrontier();drawFusion();drawCalc();drawLatency();drawMore();},150);});
 window.addEventListener("scroll",hideTip,{passive:true});
 })();
 </script>

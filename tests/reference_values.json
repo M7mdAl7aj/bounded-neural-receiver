@@ -1,5 +1,5 @@
 {
- "source": "Table V and Section VII of the published paper (three-seed means, cross-seed SD in parentheses)",
+ "source": "the published paper: Tables II, IV-a, IV-b, V, VI, VII, VIII as printed, and Section VII",
  "dmax": [
   "0",
   "ln2",
@@ -56,6 +56,278 @@
    "18.16 (0.02)",
    "18.25 (0.03)",
    "not reached**"
+  ],
+  "delay300": [
+   "20.48 (0.10)",
+   "19.92 (0.05)",
+   "19.54 (0.05)",
+   "19.21 (0.03)",
+   "18.98 (0.05)",
+   "19.04 (0.00)"
+  ]
+ },
+ "tables": {
+  "II": [
+   [
+    "Receiver",
+    "Per-TTI FLOP",
+    "Latency/slot",
+    "× 0.5 ms slot",
+    "Accuracy"
+   ],
+   [
+    "R1 classical (L1 / L2-real)",
+    "~10⁷–10⁸ (analytic, LDPC-dominated)",
+    "not measured†",
+    "–",
+    "exact"
+   ],
+   [
+    "R3 / R5, TensorFlow (FP32, unoptimized)",
+    "~5.6×10¹⁰",
+    "2.65 ms",
+    "5.3×",
+    "reference"
+   ],
+   [
+    "R3 / R5, TensorRT FP32",
+    "~5.6×10¹⁰",
+    "1.25 ms",
+    "2.50×",
+    "lossless"
+   ],
+   [
+    "R3 / R5, TensorRT FP16",
+    "~5.6×10¹⁰",
+    "0.40 ms",
+    "0.80×",
+    "−0.5 dB"
+   ],
+   [
+    "R3 / R5, TensorRT mixed-precision",
+    "~5.6×10¹⁰",
+    "0.43 ms",
+    "0.87×",
+    "lossless"
+   ]
+  ],
+  "IV-a": [
+   [
+    "Receiver",
+    "10% BLER (per-stream SNR)",
+    "BLER above 10 dB",
+    "Grid"
+   ],
+   [
+    "Classical, impairments OFF",
+    "1.00 dB",
+    "5.2 × 10⁻⁴",
+    "coarse"
+   ],
+   [
+    "Classical L1 (no IQI comp)",
+    "unreachable",
+    "1.000",
+    "coarse"
+   ],
+   [
+    "Classical L2-genie (oracle bound, diagnostic)",
+    "0.91 (0.03)",
+    "5.7 × 10⁻⁴",
+    "fine"
+   ],
+   [
+    "Classical L2-real (DMRS-estimated, the baseline)",
+    "1.12 (0.02)",
+    "1.5 × 10⁻³",
+    "fine"
+   ]
+  ],
+  "IV-b": [
+   [
+    "Neural variant",
+    "10% BLER",
+    "Minimum BLER over the swept range",
+    "Final focal loss"
+   ],
+   [
+    "Neural, plain convolution",
+    "unreachable",
+    "≈43%",
+    "0.0096"
+   ],
+   [
+    "Neural, MRC input transform",
+    "unreachable",
+    "≈30%",
+    "0.0079"
+   ],
+   [
+    "Neural, LMMSE input transform",
+    "unreachable",
+    "≈28%",
+    "0.0034"
+   ]
+  ],
+  "VI": [
+   [
+    "Condition",
+    "L2-real",
+    "R3'' ln 4",
+    "R3'' unbounded",
+    "G' ln 4",
+    "G' unbounded"
+   ],
+   [
+    "CDL-C, IRR 25 dB (in-distribution)",
+    "20.49 (0.06)",
+    "19.62 (0.03)",
+    "19.36 (0.06)",
+    "19.77 (0.02)",
+    "19.01 (0.08)"
+   ],
+   [
+    "CDL-C, IRR 20 dB",
+    "20.54 (0.06)",
+    "20.15 (0.07)",
+    "not reached*",
+    "20.26 (0.02)",
+    "not reached*"
+   ],
+   [
+    "CDL-C, IRR 35 dB",
+    "20.46 (0.06)",
+    "19.85 (0.07)",
+    "22.45 (0.05)",
+    "19.90 (0.06)",
+    "21.27 (0.06)"
+   ],
+   [
+    "CDL-D",
+    "18.62 (0.03)",
+    "17.80 (0.03)",
+    "17.01 (0.00)",
+    "18.02 (0.01)",
+    "17.47 (0.01)"
+   ],
+   [
+    "CDL-E",
+    "18.62 (0.04)",
+    "17.76 (0.00)",
+    "16.96 (0.02)",
+    "18.02 (0.01)",
+    "17.49 (0.02)"
+   ],
+   [
+    "CDL-C, 300 ns delay spread(in-model stability check, not a shift axis – frequency-domain channel, no cyclic prefix)",
+    "20.48 (0.10)",
+    "19.57 (0.05)",
+    "19.30 (0.04)",
+    "19.72 (0.05)",
+    "19.03 (0.01)"
+   ]
+  ],
+  "VII": [
+   [
+    "Condition",
+    "L2-real",
+    "R5 Δmax = ln 4",
+    "Convex interpolation, λ = 0.5",
+    "Convex interpolation, λ = 0.75"
+   ],
+   [
+    "CDL-C, IRR 25 dB (nominal)",
+    "20.49 (0.06)",
+    "19.58 (0.03)",
+    "19.06 (0.06)",
+    "18.65 (0.08)"
+   ],
+   [
+    "CDL-C, IRR 20 dB",
+    "20.54 (0.06)",
+    "20.19 (0.03)",
+    "19.92 (0.05)",
+    "20.89 (0.06)"
+   ],
+   [
+    "CDL-C, IRR 35 dB",
+    "20.46 (0.06)",
+    "19.79 (0.07)",
+    "19.30 (0.04)",
+    "19.42 (0.05)"
+   ],
+   [
+    "CDL-D",
+    "18.62 (0.03)",
+    "17.88 (0.03)",
+    "17.19 (0.04)",
+    "16.73 (0.03)"
+   ],
+   [
+    "CDL-E",
+    "18.62 (0.04)",
+    "17.82 (0.02)",
+    "17.17 (0.01)",
+    "16.66 (0.01)"
+   ]
+  ],
+  "VIII": [
+   [
+    "Condition",
+    "L2-real (LS)",
+    "LMMSE, practical prior",
+    "LMMSE, oracle prior",
+    "R3 (LS-fed)",
+    "Neural, LMMSE-fed"
+   ],
+   [
+    "CDL-C, IRR 25 dB (in-distribution)",
+    "20.49 (0.06)",
+    "17.07 (0.02)",
+    "16.94 (0.03)",
+    "19.05 (0.06)",
+    "18.81 (0.14)"
+   ],
+   [
+    "CDL-C, IRR 20 dB",
+    "20.54 (0.06)",
+    "17.10 (0.02)",
+    "16.96 (0.05)",
+    "not reached*",
+    "not reached*"
+   ],
+   [
+    "CDL-C, IRR 35 dB",
+    "20.46 (0.06)",
+    "17.07 (0.02)",
+    "16.93 (0.05)",
+    "22.18 (0.05)",
+    "–"
+   ],
+   [
+    "CDL-D",
+    "18.62 (0.03)",
+    "not reached*",
+    "not reached*",
+    "17.24 (0.00)",
+    "–"
+   ],
+   [
+    "CDL-E",
+    "18.62 (0.04)",
+    "not reached*",
+    "not reached*",
+    "17.22 (0.01)",
+    "–"
+   ],
+   [
+    "CDL-D, IRR 20 dB (joint)",
+    "18.65 (0.03)",
+    "not reached*",
+    "–",
+    "not reached*",
+    "–"
+   ]
   ]
  },
  "headline_gain_db": "1.44",

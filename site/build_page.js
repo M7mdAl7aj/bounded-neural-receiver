@@ -34,6 +34,9 @@ const LT = ["0", "\\ln 2", "\\ln 4", "\\ln 8", "\\ln 16", "\\infty"];
 const dyn = new Set(["\\Delta_{\\max}", "E_{\\mathrm{b}}/N_0", "\\Delta_{\\max}=0", "\\Delta_{\\max}\\to\\infty",
   "L_{\\mathrm{c}}", "L_{\\mathrm{R3}}", "L_{\\mathrm{R5}}", "L_{\\mathrm{R3}}-L_{\\mathrm{c}}", "L_{\\mathrm{c}}\\pm\\Delta_{\\max}"]);
 LT.forEach(x => { dyn.add(x); dyn.add("\\Delta_{\\max}=" + x); dyn.add("\\le " + x); });
+["\\lambda=0", "\\lambda=0.25", "\\lambda=0.5", "\\lambda=0.75", "\\lambda=1", "\\tau", "\\tau=0", "\\tau=\\infty", "g", "g=0",
+ "g=\\infty", "C=\\ln 2", "C=\\ln 4", "C=\\ln 8", "C=\\ln 16", "C\\to\\infty", "P(b=1)", "e^{\\Delta_{\\max}}",
+ "\\lvert L_{\\mathrm{c}}\\rvert"].forEach(x => dyn.add(x));     // fusion-rule settings and the one-bit calculator
 const TEX = {}; dyn.forEach(x => { TEX[x] = render(x, false); });
 const texJson = JSON.stringify(TEX).replace(/<\//g, "<\\/");
 
