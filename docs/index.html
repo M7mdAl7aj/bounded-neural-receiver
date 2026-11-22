@@ -227,7 +227,7 @@ table.mini td.num{font-family:var(--mono)}
         <a class="btn primary" href="#explore">Explore the results</a>
         <a class="btn" href="#" aria-disabled="true">Read the paper <span class="soon">soon</span></a>
         <a class="btn" href="https://github.com/M7mdAl7aj/bounded-neural-receiver">Code on GitHub</a>
-        <a class="btn" href="#" aria-disabled="true">Notebook <span class="soon">soon</span></a>
+        <a class="btn" href="https://github.com/M7mdAl7aj/bounded-neural-receiver/blob/main/notebook/bounded_receiver_cpu.ipynb">Notebook</a>
       </div>
     </div>
     <div class="hero-card">
@@ -466,7 +466,7 @@ const M=D.meta;
  "Downlink shared channel at "+M.carrier_ghz.toFixed(3)+" GHz, "+M.scs_khz+" kHz subcarrier spacing, "+M.n_prb+" resource blocks, MCS "+M.mcs+" (256-QAM), one transmit and "+M.n_rx_ant+" receive antennas.",
  "Phase noise is modelled at both ends of the link and IQ imbalance on the receive chains; IRR is the image-rejection ratio, and a lower IRR is harsher.",
  "Each point: "+M.seeds.length+" seeds ("+M.seeds.join(", ")+"), "+M.blocks_per_point.toLocaleString("en")+" transport blocks per seed. The 10% error point is the mean of each seed's own crossing.",
- "Only the six bounds that were measured are shown. The notebook (soon) lets you decode the stored data at any bound you like.",
+ "Only the six bounds that were measured are shown. The notebook decodes a sample of the stored LLRs at any bound you like, on a CPU, with the paper's LDPC decoder.",
  "The bound guarantees how far each bit's LLR can move. It does not by itself guarantee a block error rate."
 ].forEach(t=>{const li=document.createElement("li");li.textContent=t;document.getElementById("about-list").appendChild(li);});
 

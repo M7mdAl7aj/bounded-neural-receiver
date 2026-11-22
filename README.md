@@ -11,7 +11,7 @@ network's, and $L_{\mathrm{R5}}$ the bounded output passed to the LDPC decoder.
 
 **Try it:** <https://m7mdal7aj.github.io/bounded-neural-receiver/>. Drag $\Delta_{\max}$, switch between six channel and
 impairment conditions, and hover any chart for its values. The page shows measured results computed in advance; nothing is
-simulated in your browser. A notebook for running the decoder yourself is coming.
+simulated in your browser. To run the real decoder yourself, see [the notebook](#the-notebook).
 
 ## What is here
 
@@ -24,7 +24,24 @@ simulated in your browser. A notebook for running the decoder yourself is coming
 - `receiver/`: the link-level simulator with its RF impairments (TR 38.803 phase noise, IQ imbalance), the classical
   receivers, the neural receivers (network definitions and evaluation; the training code is not included), the bound, and
   the offline tools that decode stored LLRs.
+- `notebook/`: a notebook that decodes real stored LLRs at any bound with the paper's LDPC decoder, on a CPU; its two
+  samples are in `notebook/data/`.
 - `scripts/`: the figure scripts.
+
+## The notebook
+
+[`notebook/bounded_receiver_cpu.ipynb`](notebook/bounded_receiver_cpu.ipynb) runs the bound on real data with the real 5G NR
+LDPC decoder. It checks that $\Delta_{\max} = 0$ returns the classical receiver's LLRs bit for bit, decodes two bundled
+samples (one from the condition the network was trained on, one from a harsher IQ imbalance) at the paper's six bounds and
+confirms the outcome of every block matches the recorded decode, decodes them at any other bound, and shows how to put your
+own receiver's LLRs through the bound. GitHub shows it with its outputs. To run it yourself (no GPU needed; it takes a few
+minutes on a CPU):
+
+```bash
+python3.10 -m venv .venv && source .venv/bin/activate
+pip install -r notebook/requirements.txt
+jupyter notebook notebook/bounded_receiver_cpu.ipynb
+```
 
 ## Running the code
 

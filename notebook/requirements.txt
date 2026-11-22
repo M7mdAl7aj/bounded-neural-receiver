@@ -1,0 +1,8 @@
+# The notebook runs on a CPU with Python 3.10 (the paper's environment used 3.10.20):
+#   pip install -r notebook/requirements.txt
+tensorflow==2.16.2
+tf-keras==2.16.0
+sionna==1.2.2
+numpy==1.26.4
+matplotlib
+notebook
