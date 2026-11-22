@@ -22,7 +22,7 @@ a:hover{text-decoration:underline}
 .mock b{color:#ff8a84;font-weight:600}
 header.hero{position:relative;background:var(--white);border-bottom:1px solid var(--line-soft)}
 header.hero::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--red)}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:center;padding:40px 0 36px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:center;padding-top:40px;padding-bottom:36px}
 .eyebrow{font-size:14px;font-weight:600;letter-spacing:.01em;color:var(--red);margin:0 0 14px}
 h1{font-size:clamp(32px,3.4vw,48px);line-height:1.07;letter-spacing:-.025em;font-weight:700;margin:0 0 18px}
 h1 em{font-style:normal;color:var(--red)}
@@ -43,7 +43,7 @@ h1 em{font-style:normal;color:var(--red)}
 .stat .v .katex{font-size:.95em}
 .stat .k{font-size:12.5px;color:var(--ink-2);line-height:1.4;margin-top:6px}
 .controls{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line-soft)}
-.controls .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:28px;align-items:center;padding-top:12px;padding-bottom:12px}
+.controls .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:20px;align-items:center;padding-top:12px;padding-bottom:12px}
 .ctl-label{font-size:13.5px;font-weight:600;color:var(--ink);margin:0 0 6px;display:flex;justify-content:space-between;align-items:baseline}
 .ctl-label output{font-size:15px;color:var(--red);font-weight:500}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:0}
@@ -147,8 +147,9 @@ table.mini th,table.mini td{padding:6px 8px;border-bottom:1px solid var(--line-s
 table.mini th{color:var(--ink-2);font-weight:600;font-size:12.5px}
 table.mini td.num{font-family:var(--mono)}
 .dash{max-width:2560px;margin:0 auto;padding:20px 32px 36px;display:grid;gap:20px}
-.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
-.col{display:grid;gap:20px;align-content:start}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:stretch}
+.col{display:flex;flex-direction:column;gap:20px;min-width:0}
+.col>.box:last-child{flex:1 1 auto}
 .box{background:#fff;border:1px solid var(--line-soft);border-radius:18px;padding:22px 24px;min-width:0}
 .box .panel{border:0;padding:0;border-radius:0;background:transparent}
 .box .kpi{background:var(--light);border:0}
@@ -158,7 +159,9 @@ table.mini td.num{font-family:var(--mono)}
 .box .how .step{background:var(--light);border:0}
 .box .flow .chipbox{background:#fff}
 #sec-cards{container-type:inline-size}
-#sec-cards .cards{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+#sec-cards .cards{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));grid-auto-rows:1fr;gap:10px}
+#sec-cards .card{display:flex;flex-direction:column;justify-content:flex-start}
+#sec-cards .card svg{display:block;margin-top:auto}
 @container (min-width:760px){#sec-cards .cards{grid-template-columns:repeat(4,minmax(0,1fr))}}
 #sec-cards .card{padding:14px 14px 8px}
 #sec-cards .card .verdict{min-height:0;margin:8px 0 2px;font-size:13px}
@@ -167,12 +170,23 @@ table.mini td.num{font-family:var(--mono)}
 .calc-ctl .note-s{grid-column:1/-1}
 .rowhead{padding:6px 4px 0}
 .rowhead .sub{margin-bottom:0}
+.top{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
+.row3{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
+#sec-main{container-type:inline-size}
+@container (max-width:1149px){#sec-main .main-grid{grid-template-columns:minmax(0,1fr)}#sec-main .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@container (max-width:699px){#sec-main .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container (max-width:420px){#sec-main .kpis{grid-template-columns:minmax(0,1fr)}}
+#sec-how{container-type:inline-size}
+@container (max-width:560px){#sec-how .how{grid-template-columns:minmax(0,1fr)}}
+@media (min-width:961px){#sec-about .about{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}}
+@media (min-width:1181px){.top{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}#sec-main{grid-column:1/-1}.row3{grid-template-columns:repeat(2,minmax(0,1fr))}.row3>:last-child{grid-column:1/-1}}
+@media (min-width:1600px){.top{grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)}#sec-main{grid-column:1;grid-row:1/span 2}.row3{grid-template-columns:repeat(3,minmax(0,1fr))}.row3>:last-child{grid-column:auto}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 @media (max-width:1180px){
   .row2{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:960px){
-  .hero-grid{grid-template-columns:minmax(0,1fr);gap:28px;padding:44px 0 40px}
+  .hero-grid{grid-template-columns:minmax(0,1fr);gap:28px;padding-top:44px;padding-bottom:40px}
   .controls .wrap{grid-template-columns:minmax(0,1fr);gap:12px}
   .main-grid{grid-template-columns:minmax(0,1fr)}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -238,6 +252,7 @@ table.mini td.num{font-family:var(--mono)}
 </div>
 
 <main class="dash">
+<div class="top">
 <section class="box" id="sec-main">
 <h2 id="cond-title"></h2>
     <p class="sub" id="cond-sub"></p>
@@ -261,7 +276,6 @@ table.mini td.num{font-family:var(--mono)}
       </div>
     </div>
 </section>
-<div class="row2">
 <section class="box" id="sec-frontier">
 <h2>The gain-versus-safety trade-off</h2>
     <p class="sub">Each line is one condition: its 10% error point as the bound loosens from \(\Delta_{\max}=0\), the classical receiver, to \(\Delta_{\max}\to\infty\), the network alone. Lower is better. The selected condition is drawn in red. Click any point to select its condition; hover for values.</p>
@@ -328,6 +342,16 @@ table.mini td.num{font-family:var(--mono)}
     </div>
 </section>
 <div class="col">
+<section class="box" id="sec-how">
+<h2>How the bound works</h2>
+    <p class="sub">Nothing is retrained. The bound is applied to the two receivers' outputs, one bit at a time, just before the decoder.</p>
+    <div class="how">
+      <div class="step"><span class="num">1</span><h3>Classical anchor</h3><p>A standard receiver with IQ-imbalance compensation produces its log-likelihood ratio \(L_{\mathrm{c}}\) for every coded bit.</p></div>
+      <div class="step"><span class="num">2</span><h3>Bounded correction</h3><p>The trained network proposes \(L_{\mathrm{R3}}\). The difference \(L_{\mathrm{R3}} - L_{\mathrm{c}}\) is clipped to \(\pm\Delta_{\max}\), so no bit can move further than that: \(\lvert L_{\mathrm{R5}} - L_{\mathrm{c}} \rvert \le \Delta_{\max}\).</p></div>
+      <div class="step"><span class="num">3</span><h3>Exact fallback</h3><p>At \(\Delta_{\max} = 0\) the output is the classical receiver, bit for bit, whatever the network's weights. As \(\Delta_{\max} \to \infty\) it is the network alone.</p></div>
+    </div>
+    <div class="flow" aria-hidden="true"><span class="chipbox">Received slot</span><span class="arr">→</span><span class="chipbox">Classical receiver</span><span class="arr">+</span><span class="chipbox">Neural receiver</span><span class="arr">→</span><span class="chipbox red">Clip to \(L_{\mathrm{c}} \pm \Delta_{\max}\)</span><span class="arr">→</span><span class="chipbox">LDPC decoder</span></div>
+</section>
 <section class="box" id="sec-latency">
 <h2>Does it run in real time?</h2>
     <p class="sub" id="lat-sub"></p>
@@ -337,17 +361,11 @@ table.mini td.num{font-family:var(--mono)}
       <p class="note-s" id="lat-note"></p>
     </div>
 </section>
-<section class="box" id="sec-rank2">
-<div class="panel">
-        <div class="panel-head"><div class="panel-title">Two spatial layers (rank-2 MIMO)<small>Tables IV-a and IV-b: 256 transmit elements to 2 receive chains.</small></div></div>
-        <div id="m4"></div>
-      </div>
-</section>
 </div>
 </div>
 <div class="rowhead"><h2>More experiments from the paper</h2>
     <p class="sub">Three further questions the paper answers. Each value is the paper's table as printed; hover a point for its value.</p></div>
-<div class="row2">
+<div class="row3">
 <section class="box" id="sec-m8">
 <div class="panel">
         <div class="panel-head"><div class="panel-title">A better classical channel estimator<small>Table VIII: 10% error point, \(E_{\mathrm{b}}/N_0\) in dB, lower is better.</small></div><div class="legend" id="m8-legend"></div></div>
@@ -362,31 +380,27 @@ table.mini td.num{font-family:var(--mono)}
         <p class="note-s" id="m6-note"></p>
       </div>
 </section>
-</div>
-<div class="row2">
-<section class="box" id="sec-how">
-<h2>How the bound works</h2>
-    <p class="sub">Nothing is retrained. The bound is applied to the two receivers' outputs, one bit at a time, just before the decoder.</p>
-    <div class="how">
-      <div class="step"><span class="num">1</span><h3>Classical anchor</h3><p>A standard receiver with IQ-imbalance compensation produces its log-likelihood ratio \(L_{\mathrm{c}}\) for every coded bit.</p></div>
-      <div class="step"><span class="num">2</span><h3>Bounded correction</h3><p>The trained network proposes \(L_{\mathrm{R3}}\). The difference \(L_{\mathrm{R3}} - L_{\mathrm{c}}\) is clipped to \(\pm\Delta_{\max}\), so no bit can move further than that: \(\lvert L_{\mathrm{R5}} - L_{\mathrm{c}} \rvert \le \Delta_{\max}\).</p></div>
-      <div class="step"><span class="num">3</span><h3>Exact fallback</h3><p>At \(\Delta_{\max} = 0\) the output is the classical receiver, bit for bit, whatever the network's weights. As \(\Delta_{\max} \to \infty\) it is the network alone.</p></div>
-    </div>
-    <div class="flow" aria-hidden="true"><span class="chipbox">Received slot</span><span class="arr">→</span><span class="chipbox">Classical receiver</span><span class="arr">+</span><span class="chipbox">Neural receiver</span><span class="arr">→</span><span class="chipbox red">Clip to \(L_{\mathrm{c}} \pm \Delta_{\max}\)</span><span class="arr">→</span><span class="chipbox">LDPC decoder</span></div>
+<section class="box" id="sec-rank2">
+<div class="panel">
+        <div class="panel-head"><div class="panel-title">Two spatial layers (rank-2 MIMO)<small>Tables IV-a and IV-b: 256 transmit elements to 2 receive chains.</small></div></div>
+        <div id="m4"></div>
+      </div>
 </section>
-<div class="col">
+</div>
 <section class="box" id="sec-about">
+<div class="about">
+<div>
 <h2>About these results</h2>
       <p class="sub" style="margin-bottom:14px">Everything on this page was measured in advance on the authors' workstation; nothing here is simulated in your browser. The curves and operating points come from the paper's measurement campaign, and every value the paper prints is checked against it when the page is built. The data-rate view and the one-bit calculator are computed on the page from those values.</p>
       <ul id="about-list"></ul>
-</section>
-<section class="box" id="sec-cite">
+</div>
+<div id="sec-cite">
 <h2>Cite</h2>
       <p class="sub" style="margin-bottom:14px">If you use this work, please cite the paper.</p>
       <div class="cite">A. Elnashar and M. AlHaj, "A Bounded Neural Receiver with Exact Classical Fallback for 6G cmWave: Fair-Baseline Evaluation," <i>IEEE Open Journal of the Communications Society</i>, 2026.</div>
+</div>
+</div>
 </section>
-</div>
-</div>
 </main>
 
 <footer>
@@ -482,8 +496,9 @@ const curve=(snr,v)=>{let s="",pen=false;snr.forEach((x,i)=>{if(st.view==="tput"
 const yOn=(snr,v,xv)=>{for(let i=1;i<snr.length;i++){if(xv<=xs(snr[i])){const a=xs(snr[i-1]),b=xs(snr[i]);if(v[i-1]<=0||v[i]<=0)return null;const f=(xv-a)/(b-a);return ys(v[i-1])+(ys(v[i])-ys(v[i-1]))*f;}}return null;};
 const pct=v=>v===0?"0 errors":(v*100).toFixed(v<0.01?2:1)+"%";
 const fmtv=b=>st.view==="tput"?tput(b).toFixed(1)+" Mbit/s":pct(b);
+let mainH=null, fusH=null, frH=null; // fitted chart heights (null: the default)
 function buildChart(){
-  W=widthOf(svg);narrow=W<520;Hh=narrow?300:400;
+  W=widthOf(svg);narrow=W<520;Hh=narrow?300:(mainH||400);
   m=narrow?{l:50,r:10,t:12,b:46}:{l:66,r:18,t:14,b:50};iw=W-m.l-m.r;ih=Hh-m.t-m.b;
   svg.setAttribute("viewBox",`0 0 ${W} ${Hh}`);svg.innerHTML="";
   const g=el("g",{class:"grid"},svg), a=el("g",{class:"axis"},svg);
@@ -696,7 +711,7 @@ const shortOf=key=>(C.find(c=>c.key===key)||{}).short||key;
 // the gain-versus-safety frontier: 10% point against the bound, one line per condition
 const FR=document.getElementById("frontier");
 function drawFrontier(){
-  const FW=widthOf(FR), nar=FW<520, FH=nar?320:380, fm=nar?{l:50,r:14,t:40,b:56}:{l:66,r:24,t:44,b:58}, fiw=FW-fm.l-fm.r, fih=FH-fm.t-fm.b;
+  const FW=widthOf(FR), nar=FW<520, FH=nar?320:(frH||380), fm=nar?{l:50,r:14,t:40,b:56}:{l:66,r:24,t:44,b:58}, fiw=FW-fm.l-fm.r, fih=FH-fm.t-fm.b;
   FR.setAttribute("viewBox",`0 0 ${FW} ${FH}`);FR.innerHTML="";
   const vals=C.flatMap(c=>DM.map(d=>c.crossing[d].mean).filter(v=>v!==null));
   const lo=Math.floor(Math.min(...vals))-0.25, hi=Math.ceil(Math.max(...vals))+0.25;
@@ -784,7 +799,7 @@ function drawFusion(){
   const d=DM[st.d], R=RULES[st.rule], spec=R.k+":"+R.p[st.param][0], bspec="R5:"+d;
   const all=FCN.flatMap(k=>[FUS.points[k][spec],FUS.points[k][bspec]].flatMap(p=>p.gain===undefined?[]:[p.gain_lo,p.gain_hi]));
   const lo=Math.min(-0.5,Math.floor(Math.min(...all,0)*2)/2), hi=Math.max(0.5,Math.ceil(Math.max(...all,0)*2)/2);
-  const FW=widthOf(FS), nar=FW<520, FH=nar?300:340, m2={l:nar?46:60,r:14,t:16,b:44}, iw2=FW-m2.l-m2.r, ih2=FH-m2.t-m2.b;
+  const FW=widthOf(FS), nar=FW<520, FH=nar?300:(fusH||340), m2={l:nar?46:60,r:14,t:16,b:44}, iw2=FW-m2.l-m2.r, ih2=FH-m2.t-m2.b;
   FS.setAttribute("viewBox",`0 0 ${FW} ${FH}`);FS.innerHTML="";
   const Y=v=>m2.t+(hi-v)/(hi-lo)*ih2, gw=iw2/FCN.length, bw=Math.min(34,gw*0.28);
   const g=el("g",{class:"grid"},FS), a=el("g",{class:"axis"},FS);
@@ -883,8 +898,32 @@ function setC(i){const same=i===st.c;st.c=i;render(!same);}
 document.querySelectorAll("#view-seg button").forEach(btn=>btn.onclick=()=>{st.view=btn.dataset.v;document.querySelectorAll("#view-seg button").forEach(x=>x.setAttribute("aria-pressed",x===btn));buildChart();drawChart();});
 document.querySelectorAll("#seed-seg button").forEach(btn=>btn.onclick=()=>{st.seeds=btn.dataset.s==="1";document.querySelectorAll("#seed-seg button").forEach(x=>x.setAttribute("aria-pressed",x===btn));drawChart();});
 fusionControls();buildChart();sizeSlot();render(true);drawLatency();drawMore();
+// boxes side by side share one height (CSS stretch); the main and fusion charts take up the free space so the box edges line up
+const natH=b=>{const k=[...b.children].filter(x=>x.offsetParent!==null);if(!k.length)return 0;const L=k[k.length-1],s=getComputedStyle(b);
+  return L.getBoundingClientRect().bottom+parseFloat(getComputedStyle(L).marginBottom)-b.getBoundingClientRect().top+parseFloat(s.paddingBottom)+parseFloat(s.borderBottomWidth);};
+const cols=e=>getComputedStyle(e).gridTemplateColumns.split(" ").length;
+function fitAll(){
+  const B=id=>document.getElementById(id), main=B("sec-main"), fus=B("sec-fusion"), beside=fus.nextElementSibling;
+  const FRs=B("frontier"), frh=+FRs.getAttribute("viewBox").split(" ")[3];
+  let wr=null; // the trade-off box beside the cards (two equal columns, below 1,600 px)
+  if(!window.matchMedia("(min-width:1600px)").matches&&cols(main.parentElement)>1&&widthOf(FRs)>=520)
+    wr=Math.round(Math.max(320,Math.min(560,frh+natH(B("sec-cards"))-natH(B("sec-frontier")))));
+  if(wr!==frH&&(wr===null||frH===null||Math.abs(wr-frH)>=2)){frH=wr;drawFrontier();}
+  let wm=null;
+  if(!narrow&&window.matchMedia("(min-width:1600px)").matches){
+    const slack=natH(B("sec-frontier"))+20+natH(B("sec-cards"))-natH(main);wm=Math.round(Math.max(360,Math.min(760,W*0.9,Hh+slack)));}
+  if(wm!==mainH&&(wm===null||mainH===null||Math.abs(wm-mainH)>=2)){mainH=wm;buildChart();drawChart();}
+  const FS=B("fusion"), fh=+FS.getAttribute("viewBox").split(" ")[3];
+  let wf=null;
+  if(cols(fus.parentElement)>1&&widthOf(FS)>=520){
+    const colH=[...beside.children].reduce((a,b)=>a+natH(b),0)+20*Math.max(0,beside.children.length-1);
+    wf=Math.round(Math.max(300,Math.min(560,fh+colH-natH(fus))));}
+  if(wf!==fusH&&(wf===null||fusH===null||Math.abs(wf-fusH)>=2)){fusH=wf;drawFusion();}
+}
+fitAll();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>requestAnimationFrame(fitAll));
 let rz=null,lastW=W,lastS=SWd;
-window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(widthOf(svg)===lastW&&widthOf(S)===lastS)return;buildChart();sizeSlot();lastW=W;lastS=SWd;drawChart();drawSlot(true);drawFrontier();drawFusion();drawCalc();drawLatency();drawMore();},150);});
+window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(widthOf(svg)===lastW&&widthOf(S)===lastS)return;buildChart();sizeSlot();lastW=W;lastS=SWd;drawChart();drawSlot(true);drawFrontier();drawFusion();drawCalc();drawLatency();drawMore();fitAll();},150);});
 window.addEventListener("scroll",hideTip,{passive:true});
 })();
 </script>
