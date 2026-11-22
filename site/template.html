@@ -17,7 +17,7 @@ body{margin:0;background:var(--light);color:var(--ink);font-family:var(--font);f
 a{color:var(--red);text-decoration:none}
 a:hover{text-decoration:underline}
 .katex{font-size:1.08em}
-.wrap{max-width:1840px;margin:0 auto;padding:0 24px}
+.wrap{max-width:2560px;margin:0 auto;padding:0 32px}
 .mock{background:var(--ink);color:#fff;font-size:12.5px;text-align:center;padding:6px 16px}
 .mock b{color:#ff8a84;font-weight:600}
 header.hero{position:relative;background:var(--white);border-bottom:1px solid var(--line-soft)}
@@ -146,7 +146,7 @@ table.mini{border-collapse:collapse;font-size:13px;width:100%;margin:6px 0 10px}
 table.mini th,table.mini td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:left;vertical-align:top}
 table.mini th{color:var(--ink-2);font-weight:600;font-size:12.5px}
 table.mini td.num{font-family:var(--mono)}
-.dash{max-width:1840px;margin:0 auto;padding:20px 24px 36px;display:grid;gap:20px}
+.dash{max-width:2560px;margin:0 auto;padding:20px 32px 36px;display:grid;gap:20px}
 .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
 .col{display:grid;gap:20px;align-content:start}
 .box{background:#fff;border:1px solid var(--line-soft);border-radius:18px;padding:22px 24px;min-width:0}
@@ -157,7 +157,9 @@ table.mini td.num{font-family:var(--mono)}
 .box .card:hover{box-shadow:none;background:#efeef1}
 .box .how .step{background:var(--light);border:0}
 .box .flow .chipbox{background:#fff}
+#sec-cards{container-type:inline-size}
 #sec-cards .cards{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+@container (min-width:760px){#sec-cards .cards{grid-template-columns:repeat(4,minmax(0,1fr))}}
 #sec-cards .card{padding:14px 14px 8px}
 #sec-cards .card .verdict{min-height:0;margin:8px 0 2px;font-size:13px}
 .box .calc{grid-template-columns:minmax(0,1fr);gap:8px}
@@ -414,7 +416,7 @@ const DMX=()=>T("\\Delta_{\\max}","Δmax");
 const EBN0=()=>T("E_{\\mathrm{b}}/N_0","Eb/N0");
 const nameOf=d=>d==="0"?"Classical, "+T("\\Delta_{\\max}=0","Δmax = 0"):d==="unbounded"?"Network alone, "+T("\\Delta_{\\max}\\to\\infty","Δmax → ∞"):"Bounded, "+T("\\Delta_{\\max}="+LT[d],"Δmax = "+LP[d]);
 const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a){if(a[k]!==null&&a[k]!==undefined)e.setAttribute(k,a[k]);}if(p)p.appendChild(e);return e;};
-const widthOf=node=>Math.round(Math.max(320,Math.min(1100,node.getBoundingClientRect().width||720)));
+const widthOf=node=>Math.round(Math.max(320,Math.min(2400,node.getBoundingClientRect().width||720)));
 
 // legend swatches drawn as the same marks the charts use
 const SW={
