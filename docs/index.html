@@ -171,6 +171,10 @@ table.mini td.num{font-family:var(--mono)}
 .calc-ctl .note-s{grid-column:1/-1}
 .rowhead{padding:6px 4px 0}
 .rowhead .sub{margin-bottom:0}
+.slot-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;margin:6px 0 4px;padding:28px 24px;border:1.5px dashed var(--line);border-radius:14px;background:var(--light);color:var(--ink-2)}
+.slot-empty .h{font-size:17px;font-weight:600;color:var(--ink)}
+.slot-empty p{margin:0;max-width:560px;font-size:14.5px;line-height:1.55}
+.slot-empty .btn{margin-top:6px}
 .top{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
 .row3{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
 #sec-main{container-type:inline-size}
@@ -301,7 +305,7 @@ table.mini td.num{font-family:var(--mono)}
         <div class="legend" id="slot-legend"></div>
       </div>
       <svg id="slot" viewBox="0 0 720 300" width="100%" role="img" aria-label="LLR per coded bit for one slot" style="touch-action:pan-y"></svg>
-      <p class="sub" id="slot-none" hidden></p>
+      <div id="slot-none" hidden></div>
       <div class="counters" id="counters"></div>
     </div>
 </section>
@@ -643,7 +647,12 @@ function sizeSlot(){SWd=widthOf(S);const nar=SWd<520;SH=nar?250:300;sm=nar?{l:48
 function drawSlot(first){
   const none=document.getElementById("slot-none");
   if(!C[st.c].slot){S.style.display="none";none.hidden=false;slotFrom=null;
-    none.textContent=`No LLRs were stored for this condition (${C[st.c].detail}), so this view isn't available for it. Pick another condition with the buttons at the top.`;
+    const c=C[st.c], nOK=C.filter(x=>x.slot).length;
+    none.innerHTML=`<div class="slot-empty" style="min-height:${SH+40}px"><div class="h">No per-bit data for this condition</div>`+
+      `<p>The ${c.short.toLowerCase()} run (${c.detail}) recorded block error rates only; its per-bit LLRs were not stored, so there is no slot to show here. `+
+      `Its error rates are in the charts above. The other ${NUMW[nOK].toLowerCase()} conditions each have one stored slot.</p>`+
+      `<button class="btn" type="button" id="slot-go">Show ${C[0].short.toLowerCase()} instead</button></div>`;
+    document.getElementById("slot-go").onclick=()=>setC(0);
     ["slot-legend","counters"].forEach(id=>document.getElementById(id).innerHTML="");document.getElementById("slot-small").textContent="";
     document.getElementById("slot-sub").textContent="Real numbers from one received slot, for each condition whose LLRs were stored.";return;}
   S.style.display="";none.hidden=true;
