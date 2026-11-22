@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bounded Neural Receiver</title>
+<style>/*__ASSETS_CSS__*/</style>
+<style>
+:root{
+  --red:#e00800;--red-80:#bb0700;--red-60:#950500;
+  --white:#ffffff;--light:#f4f3f5;--ink:#0a0a0a;--ink-2:#626162;--line:#d1d0d4;--line-soft:#e9e8eb;
+  --radius:14px;--font:"Inter",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--white);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--red);text-decoration:none}
+a:hover{text-decoration:underline}
+.katex{font-size:1.08em}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mock{background:var(--ink);color:#fff;font-size:12.5px;text-align:center;padding:6px 16px}
+.mock b{color:#ff8a84;font-weight:600}
+header.hero{position:relative;background:var(--white);border-bottom:1px solid var(--line-soft)}
+header.hero::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--red)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:center;padding:64px 0 56px}
+.eyebrow{font-size:14px;font-weight:600;letter-spacing:.01em;color:var(--red);margin:0 0 14px}
+h1{font-size:clamp(34px,4.4vw,52px);line-height:1.07;letter-spacing:-.025em;font-weight:700;margin:0 0 18px}
+h1 em{font-style:normal;color:var(--red)}
+.lede{font-size:18px;color:var(--ink-2);max-width:620px;margin:0 0 28px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;font-weight:600;font-size:14.5px;border:1.5px solid var(--ink);color:var(--ink);background:#fff;transition:transform .15s ease,background .15s ease}
+.btn:hover{text-decoration:none;transform:translateY(-1px)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:var(--red-80);border-color:var(--red-80)}
+.btn .soon{font-size:11px;font-weight:600;color:var(--ink-2);background:var(--light);padding:2px 7px;border-radius:999px}
+.hero-card{background:var(--light);border-radius:22px;padding:28px}
+.formula{background:#fff;border-radius:14px;padding:16px 18px;margin:0 0 18px;border:1px solid var(--line-soft);overflow-x:auto;text-align:center}
+.formula .katex{font-size:1.45em}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{background:#fff;border-radius:12px;padding:14px 14px 12px;border:1px solid var(--line-soft)}
+.stat .v{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.stat .v.red{color:var(--red)}
+.stat .v .katex{font-size:.95em}
+.stat .k{font-size:12.5px;color:var(--ink-2);line-height:1.4;margin-top:6px}
+.controls{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line-soft)}
+.controls .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:28px;align-items:center;padding-top:12px;padding-bottom:12px}
+.ctl-label{font-size:13.5px;font-weight:600;color:var(--ink);margin:0 0 6px;display:flex;justify-content:space-between;align-items:baseline}
+.ctl-label output{font-size:15px;color:var(--red);font-weight:500}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--red) var(--fill,40%),var(--light) var(--fill,40%))}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--light)}
+input[type=range]::-moz-range-progress{height:6px;border-radius:3px;background:var(--red)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--red);border:4px solid #fff;box-shadow:0 0 0 1.5px var(--red),0 4px 12px rgba(224,8,0,.35);margin-top:-9px;cursor:grab;transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:active{transform:scale(1.12);cursor:grabbing}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--red);border:4px solid #fff;box-shadow:0 0 0 1.5px var(--red)}
+input[type=range]:focus-visible{outline:2px solid var(--red);outline-offset:4px;border-radius:4px}
+.ticks{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-2);margin-top:2px;padding:0 2px}
+.ticks>span{cursor:pointer;min-width:28px;text-align:center}
+.ticks>span.on{color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;font-weight:500;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+section{padding:56px 0}
+section.alt{background:var(--light)}
+h2{font-size:clamp(24px,2.8vw,32px);letter-spacing:-.02em;line-height:1.15;margin:0 0 8px;font-weight:700}
+.sub{color:var(--ink-2);margin:0 0 28px;max-width:780px}
+.main-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+.panel{background:#fff;border:1px solid var(--line-soft);border-radius:var(--radius);padding:20px 20px 12px}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.panel-title{font-weight:600;font-size:15px}
+.panel-title small{display:block;font-weight:400;color:var(--ink-2);font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--ink-2);align-items:center}
+.legend>span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legend svg{flex:none}
+svg text{font-family:var(--font)}
+.axis text{font-size:11.5px;fill:var(--ink-2)}
+.grid line{stroke:var(--line-soft)}
+.mtext{font-family:KaTeX_Main,"Times New Roman",serif;font-size:13px;fill:var(--ink-2)}
+.mtext .mi{font-family:KaTeX_Math,"Times New Roman",serif;font-style:italic}
+.tip{position:fixed;left:0;top:0;pointer-events:none;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:12.5px;box-shadow:0 10px 28px rgba(10,10,10,.14);opacity:0;transition:opacity .1s;min-width:190px;max-width:300px;z-index:50}
+.tip .h{font-weight:600;margin-bottom:5px;color:var(--ink)}
+.tip .row{display:flex;justify-content:space-between;gap:14px;color:var(--ink-2);line-height:1.55}
+.tip .row b{font-family:var(--mono);font-weight:500;color:var(--ink);white-space:nowrap}
+.tip .note{color:var(--ink-2);margin-top:4px;font-size:12px}
+.tip .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.kpis{display:grid;gap:10px}
+.kpi{background:#fff;border:1px solid var(--line-soft);border-radius:var(--radius);padding:16px 18px}
+.kpi .k{font-size:13.5px;font-weight:600;color:var(--ink-2)}
+.kpi .v{font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-top:2px}
+.kpi .v.red{color:var(--red)}
+.kpi .v .katex{font-size:.92em}
+.kpi .n{font-size:13px;color:var(--ink-2);line-height:1.45;margin-top:4px}
+.tablebtn{font:inherit;font-size:13px;color:var(--ink-2);background:none;border:0;padding:6px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+table.data{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 8px}
+table.data th,table.data td{padding:7px 8px;border-bottom:1px solid var(--line-soft);text-align:right}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{font-weight:600;color:var(--ink-2);font-size:12.5px}
+table.data td{font-family:var(--mono)}
+table.data tr.sel td{color:var(--red);font-weight:500}
+.cards-legend{margin:-12px 0 18px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:#fff;border:1.5px solid transparent;border-radius:var(--radius);padding:18px 18px 12px;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s;text-align:left;font:inherit;color:inherit}
+.card:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(10,10,10,.07)}
+.card[aria-pressed=true]{border-color:var(--red)}
+.card:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.card .t{font-weight:600;font-size:15px}
+.card .d{font-size:12.5px;color:var(--ink-2)}
+.card .verdict{font-size:13.5px;margin:10px 0 4px;min-height:42px;line-height:1.45}
+.card .verdict .good{color:var(--red);font-weight:600}
+.card .verdict b{font-weight:600}
+.counters{display:flex;flex-wrap:wrap;gap:10px 28px;margin:10px 0 2px;font-size:13.5px;color:var(--ink-2)}
+.counters b{font-family:var(--mono);color:var(--ink);font-weight:500}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.how .step{background:#fff;border-radius:var(--radius);padding:22px;border:1px solid var(--line-soft)}
+.how .num{display:inline-flex;width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;font-weight:700;align-items:center;justify-content:center;font-size:14px;margin-bottom:12px}
+.how h3{margin:0 0 6px;font-size:17px}
+.how p{margin:0;color:var(--ink-2);font-size:14.5px}
+.flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:26px 0 0;font-size:13.5px;font-weight:500}
+.flow .box{padding:9px 14px;border-radius:10px;background:#fff;border:1px solid var(--line)}
+.flow .box.red{border-color:var(--red);color:var(--red)}
+.flow .arr{color:var(--ink-2)}
+.about{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px}
+.about ul{margin:0;padding-left:18px;color:var(--ink-2)}
+.about li{margin:4px 0}
+.cite{font-size:13.5px;background:var(--light);border-radius:10px;padding:14px 16px;color:var(--ink);line-height:1.55}
+footer{border-top:1px solid var(--line-soft);padding:28px 0 40px;color:var(--ink-2);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+@media (max-width:960px){
+  .hero-grid{grid-template-columns:minmax(0,1fr);gap:28px;padding:44px 0 40px}
+  .controls .wrap{grid-template-columns:minmax(0,1fr);gap:12px}
+  .main-grid{grid-template-columns:minmax(0,1fr)}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .how{grid-template-columns:minmax(0,1fr)}
+  .about{grid-template-columns:minmax(0,1fr);gap:24px}
+}
+@media (max-width:600px){
+  .wrap{padding-left:16px;padding-right:16px}
+  .stats{grid-template-columns:minmax(0,1fr)}
+  .kpis{grid-template-columns:minmax(0,1fr)}
+  .cards{grid-template-columns:minmax(0,1fr)}
+  .controls{position:static}
+  section{padding:40px 0}
+  .panel{padding:14px 10px 8px}
+  .formula .katex{font-size:1.15em}
+}
+</style>
+</head>
+<body>
+<div class="mock">Mock-up for review: <b>not published</b>. Links marked "soon" are placeholders. Build __BUILD__.</div>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Bounded neural receiver · 6G cmWave</p>
+      <h1>A bounded neural receiver with <em>exact classical fallback</em></h1>
+      <p class="lede">A trained network improves a 5G-style receiver, but every bit it touches is held within a fixed distance, \(\Delta_{\max}\), of the classical receiver's answer. Set the bound to zero and the classical receiver comes back, bit for bit.</p>
+      <div class="btns">
+        <a class="btn primary" href="#explore">Explore the results</a>
+        <a class="btn" href="#" aria-disabled="true">Read the paper <span class="soon">soon</span></a>
+        <a class="btn" href="https://github.com/M7mdAl7aj/bounded-neural-receiver">Code on GitHub</a>
+        <a class="btn" href="#" aria-disabled="true">Notebook <span class="soon">soon</span></a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="formula">\[L_{\mathrm{R5}} = L_{\mathrm{c}} + \textcolor{#e00800}{\operatorname{clip}}\!\left(L_{\mathrm{R3}} - L_{\mathrm{c}},\ \textcolor{#e00800}{\pm\Delta_{\max}}\right)\]</div>
+      <div class="stats">
+        <div class="stat"><div class="v" id="h-gain"></div><div class="k">gain of the unconstrained network over the classical receiver</div></div>
+        <div class="stat"><div class="v red" id="h-share"></div><div class="k">of that gain kept at \(\Delta_{\max} = \ln 4\)</div></div>
+        <div class="stat"><div class="v">\(\Delta_{\max} = 0\)</div><div class="k">gives the classical receiver back, bit for bit</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="controls" id="explore">
+  <div class="wrap">
+    <div>
+      <div class="ctl-label"><label for="dmax">The bound, \(\Delta_{\max}\)</label><output id="dmax-out" for="dmax"></output></div>
+      <input id="dmax" type="range" min="0" max="5" step="1" value="2" aria-label="The bound, Delta max: six measured values from 0 (classical) to unbounded (the network alone)">
+      <div class="ticks" id="ticks"></div>
+    </div>
+    <div>
+      <div class="ctl-label"><span>Test condition</span></div>
+      <div class="chips" id="chips" role="group" aria-label="Test condition"></div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2 id="cond-title"></h2>
+    <p class="sub" id="cond-sub"></p>
+    <div class="main-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Block error rate vs. \(E_{\mathrm{b}}/N_0\)<small>Lower is better. Each line is the mean of three seeds; the light-orange band is their range, often thinner than the line itself. Hover for values.</small></div>
+          <div class="legend" id="legend"></div>
+        </div>
+        <svg id="chart" viewBox="0 0 720 400" width="100%" role="img" aria-label="Block error rate curves" style="touch-action:pan-y"></svg>
+        <button class="tablebtn" id="tablebtn" aria-expanded="false">Show as a table</button>
+        <div id="table" hidden></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><div class="k">10% error point</div><div class="v" id="k-cross"></div><div class="n" id="k-cross-n"></div></div>
+        <div class="kpi"><div class="k">Versus classical</div><div class="v" id="k-vs"></div><div class="n" id="k-vs-n"></div></div>
+        <div class="kpi"><div class="k">Network gain kept</div><div class="v" id="k-share"></div><div class="n" id="k-share-n"></div></div>
+        <div class="kpi"><div class="k">Worst-case deviation per bit</div><div class="v" id="k-dev"></div><div class="n">from the classical receiver's LLR, on every slot. A guarantee, not an average.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Six conditions, one bound</h2>
+    <p class="sub">The network was trained under one condition only. Move the bound and watch where it helps, and where the network on its own breaks down. Hover a point for its value; select a card to look closer.</p>
+    <div class="legend cards-legend" id="cards-legend"></div>
+    <div class="cards" id="cards"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Inside one slot</h2>
+    <p class="sub" id="slot-sub"></p>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Log-likelihood ratio per coded bit<small id="slot-small"></small></div>
+        <div class="legend" id="slot-legend"></div>
+      </div>
+      <svg id="slot" viewBox="0 0 720 300" width="100%" role="img" aria-label="LLR per coded bit for one slot" style="touch-action:pan-y"></svg>
+      <div class="counters" id="counters"></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>How the bound works</h2>
+    <p class="sub">Nothing is retrained. The bound is applied to the two receivers' outputs, one bit at a time, just before the decoder.</p>
+    <div class="how">
+      <div class="step"><span class="num">1</span><h3>Classical anchor</h3><p>A standard receiver with IQ-imbalance compensation produces its log-likelihood ratio \(L_{\mathrm{c}}\) for every coded bit.</p></div>
+      <div class="step"><span class="num">2</span><h3>Bounded correction</h3><p>The trained network proposes \(L_{\mathrm{R3}}\). The difference \(L_{\mathrm{R3}} - L_{\mathrm{c}}\) is clipped to \(\pm\Delta_{\max}\), so no bit can move further than that: \(\lvert L_{\mathrm{R5}} - L_{\mathrm{c}} \rvert \le \Delta_{\max}\).</p></div>
+      <div class="step"><span class="num">3</span><h3>Exact fallback</h3><p>At \(\Delta_{\max} = 0\) the output is the classical receiver, bit for bit, whatever the network's weights. As \(\Delta_{\max} \to \infty\) it is the network alone.</p></div>
+    </div>
+    <div class="flow" aria-hidden="true"><span class="box">Received slot</span><span class="arr">→</span><span class="box">Classical receiver</span><span class="arr">+</span><span class="box">Neural receiver</span><span class="arr">→</span><span class="box red">Clip to \(L_{\mathrm{c}} \pm \Delta_{\max}\)</span><span class="arr">→</span><span class="box">LDPC decoder</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap about">
+    <div>
+      <h2>About these results</h2>
+      <p class="sub" style="margin-bottom:14px">Everything on this page was measured in advance on the authors' workstation; nothing here is simulated in your browser. The curves and operating points are the paper's own.</p>
+      <ul id="about-list"></ul>
+    </div>
+    <div>
+      <h2>Cite</h2>
+      <p class="sub" style="margin-bottom:14px">If you use this work, please cite the paper.</p>
+      <div class="cite">A. Elnashar and M. AlHaj, "A Bounded Neural Receiver with Exact Classical Fallback for 6G cmWave: Fair-Baseline Evaluation," <i>IEEE Open Journal of the Communications Society</i>, 2026.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap"><span>Code released under the MIT licence. © 2026 Mohammed AlHaj.</span><span>Simulated link-level results; not measurements from a live network.</span></div>
+</footer>
+
+<div class="tip" id="tip" role="tooltip"></div>
+<script id="data" type="application/json">__DATA__</script>
+<script>window.TEX=__TEX__;</script>
+<script>
+(function(){
+const D=JSON.parse(document.getElementById("data").textContent);
+const DM=D.dmax, C=D.conditions;
+const LT={"0":"0","ln2":"\\ln 2","ln4":"\\ln 4","ln8":"\\ln 8","ln16":"\\ln 16","unbounded":"\\infty"};
+const LP={"0":"0","ln2":"ln 2","ln4":"ln 4","ln8":"ln 8","ln16":"ln 16","unbounded":"∞"};
+const VAL={"0":0,"ln2":Math.log(2),"ln4":Math.log(4),"ln8":Math.log(8),"ln16":Math.log(16),"unbounded":Infinity};
+const SC=__SLOT_PALETTE__; // one colour per receiver everywhere: c classical, n network alone, o bounded output (per-bit graph), band allowed range
+const COL={"0":SC.c,"ln2":SC.o,"ln4":SC.o,"ln8":SC.o,"ln16":SC.o,"unbounded":SC.n}; // the bounded receiver is one red at every bound
+const OTHER="#a3a1a9", BAND="#fdae61"; // other bounds: thin grey lines; seed spread: a light-orange band
+const NS="http://www.w3.org/2000/svg";
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const st={c:0,d:2};
+const f2=v=>v.toFixed(2), sgn=v=>(v>0?"+":v<0?"−":"")+Math.abs(v).toFixed(1);
+// every mathematical expression is typeset at build time (window.TEX); a miss is recorded on <html data-tex-miss>
+const T=(tex,plain)=>{const h=window.TEX&&window.TEX[tex];if(h)return h;const r=document.documentElement;r.dataset.texMiss=(r.dataset.texMiss?r.dataset.texMiss+" | ":"")+tex;return plain||tex;};
+const DMX=()=>T("\\Delta_{\\max}","Δmax");
+const EBN0=()=>T("E_{\\mathrm{b}}/N_0","Eb/N0");
+const nameOf=d=>d==="0"?"Classical, "+T("\\Delta_{\\max}=0","Δmax = 0"):d==="unbounded"?"Network alone, "+T("\\Delta_{\\max}\\to\\infty","Δmax → ∞"):"Bounded, "+T("\\Delta_{\\max}="+LT[d],"Δmax = "+LP[d]);
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a){if(a[k]!==null&&a[k]!==undefined)e.setAttribute(k,a[k]);}if(p)p.appendChild(e);return e;};
+const widthOf=node=>Math.round(Math.max(320,Math.min(760,node.getBoundingClientRect().width||720)));
+
+// legend swatches drawn as the same marks the charts use
+const SW={
+  line:(c,dash,w)=>`<svg width="22" height="10" aria-hidden="true"><line x1="1" y1="5" x2="21" y2="5" stroke="${c}" stroke-width="${w||2.5}" stroke-linecap="round" ${dash?'stroke-dasharray="5 4"':""}/></svg>`,
+  faint:c=>`<svg width="22" height="10" aria-hidden="true"><line x1="1" y1="5" x2="21" y2="5" stroke="${c}" stroke-width="1.5" opacity=".45"/></svg>`,
+  strip:c=>`<svg width="22" height="10" aria-hidden="true"><rect x="1" y="3.25" width="20" height="3.5" rx="1.2" fill="${c}" fill-opacity=".6" stroke="${c}" stroke-width="1"/></svg>`,
+  band:c=>`<svg width="22" height="12" aria-hidden="true"><rect x="1.5" y="1.5" width="19" height="9" rx="2" fill="${c}" fill-opacity=".2" stroke="${c}" stroke-opacity=".45" stroke-width=".75"/></svg>`,
+  dot:(c,r)=>`<svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="${r||5}" fill="${c}"/></svg>`,
+  ring:(c,r)=>`<svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="${r||4.5}" fill="#fff" stroke="${c}" stroke-width="1.6"/></svg>`,
+  tick:c=>`<svg width="16" height="14" aria-hidden="true"><circle cx="8" cy="7" r="3.6" fill="#e00800" opacity=".35"/><rect x="1" y="6.2" width="14" height="1.6" fill="${c}"/></svg>`,
+  vbar:c=>`<svg width="14" height="16" aria-hidden="true"><rect x="5" y="1" width="4" height="14" rx="1" fill="${c}" opacity=".3"/></svg>`
+};
+
+// shared hover tooltip
+const tip=document.getElementById("tip");
+function showTip(html,cx,cy){tip.innerHTML=html;tip.style.opacity=1;const r=tip.getBoundingClientRect(),vw=window.innerWidth,vh=window.innerHeight;
+  let x=cx+16,y=cy+14;if(x+r.width>vw-8)x=cx-r.width-16;if(y+r.height>vh-8)y=cy-r.height-14;tip.style.transform=`translate(${Math.max(8,x)}px,${Math.max(8,y)}px)`;}
+function hideTip(){tip.style.opacity=0;}
+const row=(label,val,col)=>`<div class="row"><span>${col?`<span class="sw" style="background:${col}"></span>`:""}${label}</span><b>${val}</b></div>`;
+
+// hero
+const H=D.headline;
+document.getElementById("h-gain").textContent=f2(H.gain_db)+" dB";
+document.getElementById("h-share").textContent=H.shares_pct.ln4+"%";
+
+// about list (every number read from the data)
+const M=D.meta;
+[
+ "Downlink shared channel at "+M.carrier_ghz.toFixed(3)+" GHz, "+M.scs_khz+" kHz subcarrier spacing, "+M.n_prb+" resource blocks, MCS "+M.mcs+" (256-QAM), one transmit and "+M.n_rx_ant+" receive antennas.",
+ "Phase noise is modelled at both ends of the link and IQ imbalance on the receive chains; IRR is the image-rejection ratio, and a lower IRR is harsher.",
+ "Each point: "+M.seeds.length+" seeds ("+M.seeds.join(", ")+"), "+M.blocks_per_point.toLocaleString("en")+" transport blocks per seed. The 10% error point is the mean of each seed's own crossing.",
+ "Only the six bounds that were measured are shown. The notebook (soon) lets you decode the stored data at any bound you like.",
+ "The bound guarantees how far each bit's LLR can move. It does not by itself guarantee a block error rate."
+].forEach(t=>{const li=document.createElement("li");li.textContent=t;document.getElementById("about-list").appendChild(li);});
+
+// controls
+const range=document.getElementById("dmax"), ticks=document.getElementById("ticks");
+DM.forEach((d,i)=>{const s=document.createElement("span");s.innerHTML=T(LT[d],LP[d]);s.onclick=()=>{range.value=i;setD(i)};ticks.appendChild(s);});
+range.addEventListener("input",()=>setD(+range.value));
+const chips=document.getElementById("chips");
+C.forEach((c,i)=>{const b=document.createElement("button");b.className="chip";b.textContent=c.short;b.onclick=()=>setC(i);chips.appendChild(b);});
+
+// math in SVG: KaTeX fonts, italic variables, upright subscripts
+function svgEbN0(parent,x,y,anchor,extra){
+  const t=el("text",{x,y,"text-anchor":anchor||"middle",class:"mtext"},parent);
+  const add=(s,cls,dy,small)=>{const p=el("tspan",{class:cls||null,dy:dy||null,"font-size":small?"9.5":null},t);p.textContent=s;};
+  add("E","mi");add("b",null,3,true);add("/",null,-3);add("N","mi");add("0",null,3,true);add(extra||"",null,-3);
+  return t;
+}
+
+// BLER chart, drawn at the container's real width so its text stays at true size
+const YMIN=5e-4, svg=document.getElementById("chart");
+let W,Hh,m,iw,ih,layer,hov,narrow;
+const xs=v=>{const s=C[0].snr;return m.l+(v-s[0])/(s[s.length-1]-s[0])*iw;};
+const ys=v=>{v=Math.max(v,YMIN);return m.t+(0-Math.log10(v))/(0-Math.log10(YMIN))*ih;};
+const path=pts=>pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+// a BLER curve: points with zero block errors are not drawn (no false floor); the path breaks at them
+const curve=(snr,v)=>{let s="",pen=false;snr.forEach((x,i)=>{if(v[i]>0){s+=(pen?"L":"M")+xs(x).toFixed(1)+" "+ys(v[i]).toFixed(1);pen=true;}else pen=false;});return s;};
+const yOn=(snr,v,xv)=>{for(let i=1;i<snr.length;i++){if(xv<=xs(snr[i])){const a=xs(snr[i-1]),b=xs(snr[i]);if(v[i-1]<=0||v[i]<=0)return null;const f=(xv-a)/(b-a);return ys(v[i-1])+(ys(v[i])-ys(v[i-1]))*f;}}return null;};
+const pct=v=>v===0?"0 errors":(v*100).toFixed(v<0.01?2:1)+"%";
+function buildChart(){
+  W=widthOf(svg);narrow=W<520;Hh=narrow?300:400;
+  m=narrow?{l:46,r:10,t:12,b:46}:{l:60,r:18,t:14,b:50};iw=W-m.l-m.r;ih=Hh-m.t-m.b;
+  svg.setAttribute("viewBox",`0 0 ${W} ${Hh}`);svg.innerHTML="";
+  const g=el("g",{class:"grid"},svg), a=el("g",{class:"axis"},svg);
+  [1,0.1,0.01,0.001].forEach(v=>{el("line",{x1:m.l,x2:W-m.r,y1:ys(v),y2:ys(v)},g);const t=el("text",{x:m.l-8,y:ys(v)+4,"text-anchor":"end"},a);t.textContent=v>=0.01?(v*100)+"%":(v*100).toFixed(1)+"%";});
+  C[0].snr.forEach((v,i)=>{if(narrow&&i%2)return;const t=el("text",{x:xs(v),y:Hh-m.b+20,"text-anchor":"middle"},a);t.textContent=v;});
+  svgEbN0(svg,m.l+iw/2,Hh-8,"middle"," (dB)");
+  const yl=el("text",{x:12,y:m.t+ih/2,"text-anchor":"middle",transform:`rotate(-90 12 ${m.t+ih/2})`,class:"axis"},svg);yl.textContent="Block error rate";yl.setAttribute("font-size","11.5");yl.setAttribute("fill","#626162");
+  el("line",{x1:m.l,x2:W-m.r,y1:ys(0.1),y2:ys(0.1),stroke:"#0a0a0a","stroke-dasharray":"3 4","stroke-width":1,opacity:.45},svg);
+  const tt=el("text",{x:W-m.r-4,y:ys(0.1)-6,"text-anchor":"end","font-size":"11.5",fill:"#626162"},svg);tt.textContent="10% target";
+  layer=el("g",{},svg);hov=el("g",{},svg);
+  const hit=el("rect",{x:m.l,y:m.t,width:iw,height:ih,fill:"transparent",style:"cursor:crosshair"},svg);
+  hit.addEventListener("pointermove",chartHover);hit.addEventListener("pointerdown",chartHover);
+  hit.addEventListener("pointerleave",()=>{hov.innerHTML="";hideTip();});
+}
+function drawChart(){
+  const c=C[st.c], d=DM[st.d];
+  layer.innerHTML="";hov.innerHTML="";
+  const order=DM.filter(k=>k!==d&&k!=="0"&&k!=="unbounded");
+  order.forEach(k=>el("path",{d:curve(c.snr,c.curves[k].mean),fill:"none",stroke:OTHER,"stroke-width":1.25},layer));
+  const band=c.curves[d], bi=c.snr.map((s,i)=>i).filter(i=>band.mean[i]>0), bp=bi.map(i=>[xs(c.snr[i]),ys(band.hi[i])]).concat(bi.map(i=>[xs(c.snr[i]),ys(band.lo[i])]).reverse());
+  el("path",{d:path(bp)+"Z",fill:BAND,"fill-opacity":.6,stroke:BAND,"stroke-width":1,"stroke-linejoin":"round"},layer);
+    ["0","unbounded"].filter(k=>k!==d).forEach(k=>el("path",{d:curve(c.snr,c.curves[k].mean),fill:"none",stroke:COL[k],"stroke-width":2.25,"stroke-dasharray":k==="unbounded"?"7 5":null,"stroke-linecap":"round"},layer));
+  const sel=el("path",{d:curve(c.snr,c.curves[d].mean),fill:"none",stroke:COL[d],"stroke-width":3.25,"stroke-linecap":"round","stroke-linejoin":"round","stroke-dasharray":d==="unbounded"?"7 5":null},layer);
+  if(!reduce&&d!=="unbounded"){const L=sel.getTotalLength();sel.style.strokeDasharray=L;sel.style.strokeDashoffset=L;sel.getBoundingClientRect();sel.style.transition="stroke-dashoffset .6s ease";sel.style.strokeDashoffset=0;setTimeout(()=>{sel.style.transition="";sel.style.strokeDasharray="none";},700);}
+  const x=c.crossing[d];
+  if(x.mean!==null){
+    const cx=xs(x.mean), cy=ys(0.1);
+    // the value sits in the empty lower part of the plot, joined to the marker by a drop line: no curve is covered
+    const txt=f2(x.mean)+" dB", pw=txt.length*7.4+16, px=Math.min(Math.max(cx,m.l+pw/2),W-m.r-pw/2);
+    const drawn=DM.map(k=>c.curves[k].mean), xsamp=[px-pw/2,px-pw/4,px,px+pw/4,px+pw/2];
+    const clear=yc=>Math.min(...drawn.flatMap(v=>xsamp.map(xx=>{const y=yOn(c.snr,v,xx);return y===null?1e9:Math.abs(y-yc);})));
+    const cands=[0.0022,0.0012,0.004,0.0008,0.03].map(ys).filter(y=>y>cy+30&&y<m.t+ih-12);
+    let ly=cands.find(y=>clear(y)>14);if(ly===undefined)ly=cands.reduce((a,b)=>clear(b)>clear(a)?b:a,cands[0]??ys(0.0022));
+    el("line",{x1:cx,x2:cx,y1:cy+8,y2:ly-11,stroke:COL[d],"stroke-width":1.25,"stroke-dasharray":"2 3",opacity:.8},layer);
+    el("circle",{cx,cy,r:7,fill:"#fff",stroke:COL[d],"stroke-width":3},layer);
+    el("rect",{x:px-pw/2,y:ly-11,width:pw,height:22,rx:11,fill:"#fff",stroke:COL[d],"stroke-width":1.5},layer);
+    const lbl=el("text",{x:px,y:ly+4.5,"text-anchor":"middle","font-size":"12.5","font-weight":"700",fill:"#0a0a0a"},layer);lbl.textContent=txt;
+  }
+  const lg=document.getElementById("legend");
+  const items=["0",d,"unbounded"].filter((v,i,a)=>a.indexOf(v)===i);
+  lg.innerHTML=items.map(k=>`<span>${SW.line(COL[k],k==="unbounded",k===d?3.25:2.25)}${nameOf(k)}</span>`).join("")+(order.length?`<span>${SW.strip(BAND)}seed spread</span>`+`<span>${SW.line(OTHER,false,1.25)}other bounds</span>`:"");
+  drawTable();
+}
+function chartHover(ev){
+  const c=C[st.c], d=DM[st.d], r=svg.getBoundingClientRect(), sx=(ev.clientX-r.left)*W/r.width;
+  let i=0,best=1e9;c.snr.forEach((s,j)=>{const dd=Math.abs(xs(s)-sx);if(dd<best){best=dd;i=j;}});
+  hov.innerHTML="";const X=xs(c.snr[i]);
+  el("line",{x1:X,x2:X,y1:m.t,y2:m.t+ih,stroke:"#0a0a0a","stroke-width":1,opacity:.22},hov);
+  const keys=["0",d,"unbounded"].filter((v,j,a)=>a.indexOf(v)===j);
+  keys.forEach(k=>el("circle",{cx:X,cy:ys(c.curves[k].mean[i]),r:5,fill:COL[k],stroke:"#fff","stroke-width":2},hov));
+  const b=c.curves[d];
+  showTip(`<div class="h">${EBN0()} = ${c.snr[i]} dB</div>`+keys.map(k=>row(nameOf(k),pct(c.curves[k].mean[i]),COL[k])).join("")+
+    `<div class="note">Seed range at ${T("\\Delta_{\\max}="+LT[d],"Δmax = "+LP[d])}: ${pct(b.lo[i])} to ${pct(b.hi[i])}. Each seed: ${M.blocks_per_point.toLocaleString("en")} blocks.</div>`,ev.clientX,ev.clientY);
+}
+
+// table view
+const tb=document.getElementById("tablebtn"), tdiv=document.getElementById("table");
+tb.onclick=()=>{const o=tdiv.hidden;tdiv.hidden=!o;tb.setAttribute("aria-expanded",o);tb.textContent=o?"Hide the table":"Show as a table";};
+function drawTable(){
+  const c=C[st.c];
+  tdiv.innerHTML=`<table class="data"><thead><tr><th>Bound, ${DMX()}</th><th>10% error point (dB)</th><th>Spread across seeds (SD, dB)</th></tr></thead><tbody>`+
+  DM.map((k,i)=>{const x=c.crossing[k];return `<tr class="${i===st.d?"sel":""}"><td>${T(LT[k],LP[k])}${k==="0"?" (classical)":k==="unbounded"?" (network alone)":""}</td><td>${x.mean===null?"not reached":f2(x.mean)}</td><td>${x.mean===null?"–":f2(x.sd)}</td></tr>`}).join("")+`</tbody></table>`;
+}
+
+// KPI tiles
+function kpis(){
+  const c=C[st.c], d=DM[st.d], x=c.crossing[d], cl=c.crossing["0"].mean, nn=c.crossing["unbounded"];
+  const kc=document.getElementById("k-cross"), kcn=document.getElementById("k-cross-n");
+  if(x.mean===null){kc.textContent="Not reached";kcn.textContent="Lowest error rate in the swept range: "+(x.floor*100).toFixed(0)+"%.";}
+  else{kc.textContent=f2(x.mean)+" dB";kcn.innerHTML=EBN0()+" needed for 10% block errors. Three-seed mean.";}
+  const kv=document.getElementById("k-vs"), kvn=document.getElementById("k-vs-n");
+  if(x.mean===null){kv.textContent="–";kv.className="v";kvn.textContent="The receiver never gets to 10% errors here.";}
+  else if(d==="0"){kv.textContent="Baseline";kv.className="v";kvn.textContent="This is the classical receiver itself.";}
+  else{const g=cl-x.mean;kv.textContent=(g>=0?"−":"+")+f2(Math.abs(g))+" dB";kv.className="v"+(g>0?" red":"");kvn.textContent=g>=0.005?f2(g)+" dB less signal needed than classical.":(g<=-0.005?f2(-g)+" dB more signal needed than classical.":"Level with classical.");}
+  const ks=document.getElementById("k-share"), ksn=document.getElementById("k-share-n");
+  if(nn.mean===null){ks.textContent="–";ks.className="v";ksn.textContent="The network alone never reaches 10% errors in this condition"+(x.mean!==null&&d!=="unbounded"?"; with this bound the receiver does.":".");}
+  else if(cl-nn.mean<=0){ks.textContent="–";ks.className="v";ksn.textContent="Here the network alone is "+f2(nn.mean-cl)+" dB worse than classical; there is no gain to keep.";}
+  else if(x.mean===null){ks.textContent="–";ks.className="v";ksn.textContent="";}
+  else{const s=Math.round(100*(cl-x.mean)/(cl-nn.mean));ks.textContent=s+"%";ks.className="v red";ksn.textContent="of the network's own "+f2(cl-nn.mean)+" dB gain in this condition.";}
+  document.getElementById("k-dev").innerHTML=d==="unbounded"?"Unbounded":d==="0"?"Zero":T("\\le "+LT[d],"≤ "+LP[d]);
+}
+
+// condition cards
+const cardsEl=document.getElementById("cards"), CMIN=16, CMAX=24;
+C.forEach((c,i)=>{const b=document.createElement("button");b.className="card";b.onclick=()=>{setC(i);document.getElementById("explore").scrollIntoView({behavior:reduce?"auto":"smooth"});};
+  b.innerHTML=`<div class="t">${c.short}</div><div class="d">${c.detail}</div><div class="verdict"></div><svg viewBox="0 0 300 66" width="100%" aria-hidden="true"></svg>`;cardsEl.appendChild(b);});
+function drawCards(){
+  const d=DM[st.d];
+  document.getElementById("cards-legend").innerHTML=`<span>${SW.dot(COL["0"])}Classical</span>`+(d!=="0"&&d!=="unbounded"?`<span>${SW.dot(COL[d])}${nameOf(d)}</span>`:"")+`<span>${SW.ring(COL.unbounded)}Network alone</span><span style="color:#626162">10% error point, ${EBN0()} in dB</span>`;
+  [...cardsEl.children].forEach((b,i)=>{
+    const c=C[i];b.setAttribute("aria-pressed",i===st.c);
+    const cl=c.crossing["0"].mean, x=c.crossing[d], nn=c.crossing["unbounded"];
+    let v;
+    if(d==="0")v=`Classical: <b>${f2(cl)} dB</b>`;
+    else if(x.mean===null)v=`<b>Not reached</b> at this bound.`;
+    else{const g=cl-x.mean;v=g>=0.005?`<span class="good">${f2(g)} dB better</span> than classical`:(g<=-0.005?`<b>${f2(-g)} dB behind</b> classical`:`<b>Level</b> with classical`);}
+    if(d!=="unbounded"&&nn.mean===null)v+=`<br><span style="color:#626162">The network alone: never reaches 10%.</span>`;
+    else if(d!=="unbounded"&&nn.mean>cl)v+=`<br><span style="color:#626162">The network alone: ${f2(nn.mean-cl)} dB behind.</span>`;
+    b.querySelector(".verdict").innerHTML=v;
+    const s=b.querySelector("svg");s.innerHTML="";
+    const X=v=>14+(v-CMIN)/(CMAX-CMIN)*272, TY=34;
+    el("line",{x1:14,x2:286,y1:TY,y2:TY,stroke:"#e9e8eb","stroke-width":6,"stroke-linecap":"round"},s);
+    for(let t=CMIN;t<=CMAX;t+=2){const tx=el("text",{x:X(t),y:62,"text-anchor":"middle","font-size":"10.5",fill:"#626162"},s);tx.textContent=t;}
+    const tipFor=(key,val)=>{let h=`<div class="h">${c.short}</div>`+row(nameOf(key),val===null?"not reached":f2(val)+" dB",COL[key]);
+      if(val===null)h+=`<div class="note">Lowest error rate in the swept range: ${(c.crossing[key].floor*100).toFixed(0)}%.</div>`;
+      else if(key!=="0"){const g=cl-val;h+=`<div class="note">${Math.abs(g)<0.005?"Level with":f2(Math.abs(g))+" dB "+(g>0?"better than":"behind")} classical. Seed SD ${f2(c.crossing[key].sd)} dB.</div>`;}
+      else h+=`<div class="note">Seed SD ${f2(c.crossing[key].sd)} dB.</div>`;return h;};
+    const dot=(key,hollow)=>{const val=c.crossing[key].mean;
+      if(val===null){const a=el("text",{x:286,y:11,"text-anchor":"end","font-size":"10.5",fill:COL[key],"font-weight":"600"},s);a.textContent=(key==="unbounded"?"Network alone":"Bound")+": not reached →";
+        a.addEventListener("pointerenter",e=>showTip(tipFor(key,null),e.clientX,e.clientY));a.addEventListener("pointermove",e=>showTip(tipFor(key,null),e.clientX,e.clientY));a.addEventListener("pointerleave",hideTip);return;}
+      const g=el("g",{style:"cursor:help"},s);
+      el("circle",{cx:X(val),cy:TY,r:hollow?6:7,fill:hollow?"#fff":COL[key],stroke:COL[key],"stroke-width":hollow?2.5:2},g);
+      el("circle",{cx:X(val),cy:TY,r:13,fill:"transparent"},g);
+      g.addEventListener("pointerenter",e=>showTip(tipFor(key,val),e.clientX,e.clientY));g.addEventListener("pointermove",e=>showTip(tipFor(key,val),e.clientX,e.clientY));g.addEventListener("pointerleave",hideTip);};
+    dot("unbounded",true);dot("0",false);
+    if(d!=="0"&&d!=="unbounded")dot(d,false);
+  });
+}
+
+// one slot of real LLRs, also drawn at the container's real width
+const S=document.getElementById("slot");
+let SWd,SH,sm,sw,sh,NB,slotDots=[],slotBand=[],slotFrom=null,slotAnim=null,slotOut=[],slotHov;
+const sl=v=>Math.sign(v)*Math.log10(1+Math.abs(v)), SMAX=3.2;
+const sy=v=>sm.t+(SMAX-sl(v))/(2*SMAX)*sh;
+function sizeSlot(){SWd=widthOf(S);const nar=SWd<520;SH=nar?250:300;sm=nar?{l:48,r:8,t:12,b:28}:{l:60,r:14,t:14,b:30};sw=SWd-sm.l-sm.r;sh=SH-sm.t-sm.b;NB=nar?40:96;S.setAttribute("viewBox",`0 0 ${SWd} ${SH}`);}
+function drawSlot(first){
+  const c=C[st.c], s=c.slot, d=DM[st.d], Dv=VAL[d], n=Math.min(NB,s.l2.length), bw=sw/n;
+  const L2=s.l2.slice(0,n), R3=s.r3.slice(0,n), BIT=s.bit.slice(0,n), rr=Math.max(2.2,Math.min(3.4,bw*0.3));
+  if(first){
+    S.innerHTML="";const a=el("g",{class:"axis"},S), g=el("g",{class:"grid"},S);
+    [-1000,-100,-10,-1,0,1,10,100,1000].forEach(v=>{el("line",{x1:sm.l,x2:SWd-sm.r,y1:sy(v),y2:sy(v),opacity:v===0?1:.6,stroke:v===0?"#d1d0d4":null},g);const t=el("text",{x:sm.l-8,y:sy(v)+4,"text-anchor":"end"},a);t.textContent=v>0?"+"+v:v;});
+    const yl=el("text",{x:12,y:sm.t+sh/2,"text-anchor":"middle",transform:`rotate(-90 12 ${sm.t+sh/2})`,"font-size":"11.5",fill:"#626162"},S);yl.textContent="LLR (log scale)";
+    const xl=el("text",{x:sm.l+sw/2,y:SH-6,"text-anchor":"middle","font-size":"11.5",fill:"#626162"},S);xl.textContent="coded bit";
+    // classical (ticG) is drawn after the output dots: a thin line through each dot
+    const bandG=el("g",{},S), nnG=el("g",{},S), outG=el("g",{},S), ticG=el("g",{},S);slotHov=el("g",{},S);
+    slotBand=[];slotDots=[];
+    for(let i=0;i<n;i++){
+      const x=sm.l+(i+.5)*bw;
+      slotBand.push(el("rect",{x:x-rr*0.7,width:rr*1.4,fill:SC.band,opacity:.2,rx:1},bandG));
+      const tw=Math.min(bw*0.47,rr*2.1);el("rect",{x:x-tw,y:sy(L2[i])-0.7,width:2*tw,height:1.4,fill:SC.c,rx:0.7},ticG);
+      el("circle",{cx:x,cy:sy(R3[i]),r:rr*0.95,fill:"#fff",stroke:SC.n,"stroke-width":1.2},nnG);
+      slotDots.push(el("circle",{cx:x,cy:sy(L2[i]),r:rr,stroke:"#fff","stroke-width":0.8},outG));
+    }
+    const hit=el("rect",{x:sm.l,y:sm.t,width:sw,height:sh,fill:"transparent",style:"cursor:crosshair"},S);
+    const onHover=ev=>{const r=S.getBoundingClientRect(),sx=(ev.clientX-r.left)*SWd/r.width,i=Math.max(0,Math.min(n-1,Math.floor((sx-sm.l)/bw)));
+      const dd=DM[st.d],Dx=VAL[dd],x=sm.l+(i+.5)*bw,out=slotOut[i],dev=R3[i]-L2[i],clipped=Dx!==Infinity&&Math.abs(dev)>Dx+1e-12;
+      slotHov.innerHTML="";el("rect",{x:x-bw/2,y:sm.t,width:bw,height:sh,fill:"#0a0a0a",opacity:.06},slotHov);
+      el("circle",{cx:x,cy:sy(out),r:rr+2.5,fill:"none",stroke:"#0a0a0a","stroke-width":1.2},slotHov);
+      const dec=v=>v>0?"1":"0";
+      showTip(`<div class="h">Coded bit ${i+1} · sent: ${BIT[i]}</div>`+
+        row("Classical "+T("L_{\\mathrm{c}}","Lc"),sgn(L2[i]),SC.c)+row("Network "+T("L_{\\mathrm{R3}}","LR3"),sgn(R3[i]),SC.n)+
+        row(T("L_{\\mathrm{R3}}-L_{\\mathrm{c}}","LR3 − Lc"),sgn(dev))+row("Output "+T("L_{\\mathrm{R5}}","LR5")+" at "+T("\\Delta_{\\max}="+LT[dd],"Δmax = "+LP[dd]),sgn(out),dd==="0"?SC.c:dd==="unbounded"?SC.n:SC.o)+
+        `<div class="note">${Dx===0?"Bound is zero: the output is the classical value.":Dx===Infinity?"No bound: the output is the network's value.":clipped?"Clipped: the network wanted to move this bit by "+Math.abs(dev).toFixed(1)+", the bound allows "+Dx.toFixed(3)+".":"Within the bound: the network's value passes unchanged."} Decision: ${dec(out)}${dec(out)!==dec(L2[i])?" (changed from classical)":""}${dec(out)===String(BIT[i])?", correct.":", wrong."}</div>`,ev.clientX,ev.clientY);};
+    hit.addEventListener("pointermove",onHover);hit.addEventListener("pointerdown",onHover);
+    hit.addEventListener("pointerleave",()=>{slotHov.innerHTML="";hideTip();});
+    slotFrom=L2.slice();
+  }
+  const out=L2.map((l,i)=>Dv===Infinity?R3[i]:Math.min(Math.max(R3[i],l-Dv),l+Dv));slotOut=out;
+  slotBand.forEach((r,i)=>{if(Dv===0||Dv===Infinity){r.setAttribute("height",0);return;}const a=sy(L2[i]+Dv),b=sy(L2[i]-Dv);r.setAttribute("y",a);r.setAttribute("height",Math.max(b-a,0));});
+  const OUTC=d==="0"?SC.c:d==="unbounded"?SC.n:SC.o;slotDots.forEach(c2=>c2.setAttribute("fill",OUTC));
+  const from=slotFrom||out, t0=performance.now(), Tm=reduce?0:520;
+  cancelAnimationFrame(slotAnim);
+  const step=t=>{const k=Tm?Math.min(1,(t-t0)/Tm):1, e=1-Math.pow(1-k,3);
+    slotDots.forEach((c2,i)=>c2.setAttribute("cy",sy(from[i]+(out[i]-from[i])*e)));
+    if(k<1)slotAnim=requestAnimationFrame(step);else slotFrom=out;};
+  slotAnim=requestAnimationFrame(step);
+  const moved=out.filter((v,i)=>Math.abs(v-L2[i])>1e-9).length, flips=out.filter((v,i)=>Math.sign(v)!==Math.sign(L2[i])).length;
+  const mc=Math.max(...L2.map(Math.abs)), mn=Math.max(...R3.map(Math.abs));
+  document.getElementById("slot-sub").innerHTML=`Real numbers from one received slot (${c.detail}, ${EBN0()} = ${s.snr_db} dB, seed ${s.seed}). In this window the classical receiver's LLRs reach ±${Math.round(mc)}, the network's only ±${Math.round(mn)}. The bound lets the network nudge each bit by at most ${DMX()} around the classical value, so a classical decision more confident than ${DMX()} can never be overturned. Hover a bit for its values.`;
+  document.getElementById("slot-small").textContent=`First ${n} coded bits of block ${s.block}. A positive LLR means the bit is more likely a 1.`;
+  document.getElementById("slot-legend").innerHTML=`<span>${SW.tick(SC.c)}Classical ${T("L_{\\mathrm{c}}","Lc")}</span><span>${SW.ring(SC.n,3.6)}Network alone ${T("L_{\\mathrm{R3}}","LR3")}</span>`+
+    (Dv!==0&&Dv!==Infinity?`<span>${SW.vbar(SC.band)}Allowed range ${T("L_{\\mathrm{c}}\\pm\\Delta_{\\max}","Lc ± Δmax")}</span>`:"")+`<span>${SW.dot(d==="0"?SC.c:d==="unbounded"?SC.n:SC.o,3.8)}Output ${T("L_{\\mathrm{R5}}","LR5")}</span>`;
+  document.getElementById("counters").innerHTML=`<span>Bits moved off the classical value: <b>${moved} of ${n}</b></span><span>Hard decisions changed: <b>${flips} of ${n}</b></span><span>Largest move: <b>${Dv===Infinity?Math.max(...out.map((v,i)=>Math.abs(v-L2[i]))).toFixed(1):Dv===0?"0":"≤ "+Dv.toFixed(3)}</b></span>`;
+}
+
+// state
+function render(slotFirst){
+  const c=C[st.c], d=DM[st.d];
+  document.getElementById("dmax-out").innerHTML=T(LT[d],LP[d])+(d==="0"?" · classical":d==="unbounded"?" · network alone":"");
+  range.style.setProperty("--fill",(st.d/5*100)+"%");
+  [...ticks.children].forEach((s,i)=>s.classList.toggle("on",i===st.d));
+  [...chips.children].forEach((b,i)=>b.setAttribute("aria-pressed",i===st.c));
+  document.getElementById("cond-title").textContent=c.short;
+  document.getElementById("cond-sub").textContent=c.detail+". "+(st.c===0?"The condition the network was trained on.":"The network never saw this condition in training.");
+  hideTip();drawChart();kpis();drawCards();drawSlot(slotFirst);
+  try{history.replaceState(null,"","#c="+c.key+"&d="+d);}catch(e){}
+}
+function setD(i){st.d=i;render(false);}
+function setC(i){const same=i===st.c;st.c=i;render(!same);}
+(function fromHash(){const h=new URLSearchParams(location.hash.slice(1));const ci=C.findIndex(c=>c.key===h.get("c")),di=DM.indexOf(h.get("d"));if(ci>=0)st.c=ci;if(di>=0)st.d=di;range.value=st.d;})();
+buildChart();sizeSlot();render(true);
+let rz=null,lastW=W,lastS=SWd;
+window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(widthOf(svg)===lastW&&widthOf(S)===lastS)return;buildChart();sizeSlot();lastW=W;lastS=SWd;drawChart();drawSlot(true);},150);});
+window.addEventListener("scroll",hideTip,{passive:true});
+})();
+</script>
+</body>
+</html>

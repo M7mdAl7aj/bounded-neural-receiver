@@ -1,0 +1,10 @@
+snr_db,bler_mean,bler_sem,n_runs,n_tti,delta_max,delta_max_value
+16.0,0.9697916666666666,0.0020833333333333814,2,960,unbounded,inf
+17.0,0.27239583333333334,0.018229166666666685,2,960,unbounded,inf
+18.0,0.004687500000000001,0.0015625,2,960,unbounded,inf
+19.0,0.0,0.0,2,960,unbounded,inf
+20.0,0.0,0.0,2,960,unbounded,inf
+21.0,0.0,0.0,2,960,unbounded,inf
+22.0,0.0,0.0,2,960,unbounded,inf
+23.0,0.0,0.0,2,960,unbounded,inf
+24.0,0.0,0.0,2,960,unbounded,inf

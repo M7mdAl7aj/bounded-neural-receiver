@@ -1,0 +1,40 @@
+{
+ "carrier_ghz": 7.125,
+ "scs_khz": 30.0,
+ "n_prb": 51,
+ "mcs": 27,
+ "n_rx_ant": 2,
+ "blocks_per_point": 1920,
+ "seeds": [
+  42,
+  43,
+  44
+ ],
+ "llr_sign": "a positive LLR means the bit is more likely a 1",
+ "conditions": {
+  "cdlC_irr25": {
+   "channel": "C",
+   "irr_db": 25.0
+  },
+  "cdlD": {
+   "channel": "D",
+   "irr_db": 25.0
+  },
+  "cdlE": {
+   "channel": "E",
+   "irr_db": 25.0
+  },
+  "irr20": {
+   "channel": "C",
+   "irr_db": 20.0
+  },
+  "irr35": {
+   "channel": "C",
+   "irr_db": 35.0
+  },
+  "joint": {
+   "channel": "D",
+   "irr_db": 20.0
+  }
+ }
+}

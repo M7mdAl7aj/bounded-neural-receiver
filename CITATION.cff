@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+title: "bounded-neural-receiver"
+type: software
+authors:
+  - family-names: "AlHaj"
+    given-names: "Mohammed"
+license: MIT
+repository-code: "https://github.com/M7mdAl7aj/bounded-neural-receiver"
+url: "https://m7mdal7aj.github.io/bounded-neural-receiver/"
+preferred-citation:
+  type: article
+  title: "A Bounded Neural Receiver with Exact Classical Fallback for 6G cmWave: Fair-Baseline Evaluation"
+  authors:
+    - family-names: "Elnashar"
+      given-names: "Ayman"
+    - family-names: "AlHaj"
+      given-names: "Mohammed"
+  journal: "IEEE Open Journal of the Communications Society"
+  year: 2026
