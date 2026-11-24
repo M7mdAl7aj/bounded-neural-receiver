@@ -9,6 +9,8 @@ $$L_{\mathrm{R5}} = L_{\mathrm{c}} + \mathrm{clip}\left(L_{\mathrm{R3}} - L_{\ma
 where $L_{\mathrm{c}}$ is the classical receiver's log-likelihood ratio for a coded bit, $L_{\mathrm{R3}}$ the trained
 network's, and $L_{\mathrm{R5}}$ the bounded output passed to the LDPC decoder.
 
+**Paper:** <https://doi.org/10.1109/OJCOMS.2026.3756446> (IEEE Open Journal of the Communications Society, open access).
+
 **Try it:** <https://m7mdal7aj.github.io/bounded-neural-receiver/>. Drag $\Delta_{\max}$, switch between six channel and
 impairment conditions, and hover any chart for its values. The page shows measured results computed in advance; nothing is
 simulated in your browser. To run the real decoder yourself, see [the notebook](#the-notebook).
@@ -60,7 +62,7 @@ node site/build_page.js site/template.html build/data.json docs/index.html
 
 Please cite the paper:
 
-> A. Elnashar and M. AlHaj, "A Bounded Neural Receiver with Exact Classical Fallback for 6G cmWave: Fair-Baseline Evaluation," *IEEE Open Journal of the Communications Society*, 2026.
+> A. Elnashar and M. AlHaj, "A Bounded Neural Receiver with Exact Classical Fallback for 6G cmWave: Fair-Baseline Evaluation," *IEEE Open Journal of the Communications Society*, early access, 2026, doi: [10.1109/OJCOMS.2026.3756446](https://doi.org/10.1109/OJCOMS.2026.3756446).
 
 The software is by Mohammed AlHaj; see `CITATION.cff`.
 

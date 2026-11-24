@@ -12,6 +12,13 @@ const katex = require(path.join(V, "katex", "katex.min.js"));
 const b64 = f => fs.readFileSync(f).toString("base64");
 // receiver colours, one per receiver across the page: classical, network alone, bounded output; allowed range
 const SLOT = {c: "#7c2d12", n: "#059669", o: "#e00800", band: "#e00800"};
+// the paper's DOI has one source, CITATION.cff; the README and the notebook must cite the same one
+const ROOT = path.join(__dirname, "..");
+const doiM = fs.readFileSync(path.join(ROOT, "CITATION.cff"), "utf8").match(/^\s*doi:\s*"(10\.\d{4,}\/[^"\s]+)"\s*$/m);
+if (!doiM) throw new Error("no doi in CITATION.cff");
+const DOI = doiM[1];
+for (const f of ["README.md", path.join("notebook", "bounded_receiver_cpu.ipynb")])
+  if (!fs.readFileSync(path.join(ROOT, f), "utf8").includes(DOI)) throw new Error(f + " does not cite doi " + DOI);
 
 let t = fs.readFileSync(tplP, "utf8");
 const data = fs.readFileSync(dataP, "utf8"); JSON.parse(data);
@@ -53,8 +60,8 @@ let fcss = `@font-face{font-family:"Inter";font-style:normal;font-weight:100 900
 plex.forEach(f => { fcss += `@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:${f[1]};font-display:swap;src:url(data:font/woff2;base64,${b64(file(f))}) format("woff2");unicode-range:${f[3]}}`; });
 
 let out = (head + tail).replace("/*__ASSETS_CSS__*/", () => kcss + fcss).replace("__TEX__", () => texJson)
-  .replace("__SLOT_PALETTE__", () => JSON.stringify(SLOT)).replace("__DATA__", () => data);
+  .replace("__SLOT_PALETTE__", () => JSON.stringify(SLOT)).replace(/__PAPER_DOI__/g, () => DOI).replace("__DATA__", () => data);
 if (/https?:\/\/(fonts|cdn)\./.test(out)) throw new Error("an external asset reference is left");
-if (/__(DATA|TEX|ASSETS_CSS|SLOT_PALETTE|BUILD)__/.test(out)) throw new Error("a placeholder is left");
+if (/__(DATA|TEX|ASSETS_CSS|SLOT_PALETTE|BUILD|PAPER_DOI)__/.test(out)) throw new Error("a placeholder is left");
 fs.writeFileSync(outP, out);
 console.log(`built ${outP}: ${out.length.toLocaleString("en")} bytes; static expressions ${nStatic}; view-time expressions ${dyn.size}; KaTeX fonts inlined ${nFonts}`);
